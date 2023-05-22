@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/ic_cur_week"
+        android:title="当前周"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/ic_mark"
+        android:icon="@drawable/ic_chrome_reader_mode_white_24dp"
+        android:title="学期"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/ic_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:title="设置"
+        app:showAsAction="never"/>
+
+
+</menu>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_import"
+            android:icon="@drawable/ic_flash_auto_black_24dp"
+            android:title="数据导入"/>
+        <item
+            android:id="@+id/nav_scores"
+            android:icon="@drawable/ic_format_list_numbered_black_24dp"
+            android:title="成绩查看"/>
+
+        <item
+            android:id="@+id/nav_info"
+            android:icon="@drawable/ic_info_outline_black_24dp"
+            android:title="关于"/>
+    </group>
+</menu>

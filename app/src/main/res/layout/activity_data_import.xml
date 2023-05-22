@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.wyu.DataImportActivity">
+
+<android.support.design.widget.AppBarLayout
+    android:id="@+id/appBarLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <include layout="@layout/custom_toolbar" />
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/data_ipt_tab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorColor="#E91E63"
+        app:tabMode="fixed"
+        app:tabTextColor="@color/textColorPrimary">
+
+        <android.support.design.widget.TabItem
+            android:id="@+id/data_ipt_tabItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="自动导入" />
+
+        <android.support.design.widget.TabItem
+            android:id="@+id/data_ipt_tabItem2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="手动导入" />
+    </android.support.design.widget.TabLayout>
+</android.support.design.widget.AppBarLayout>
+
+
+<android.support.v4.view.ViewPager
+    android:id="@+id/data_ipt_pageview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+</android.support.v4.view.ViewPager>
+
+
+</android.support.design.widget.CoordinatorLayout>

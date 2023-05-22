@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    tools:context="com.wyu.DataImportActivity">
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/wyu_back"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:layout_marginBottom="5dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="请选择入学年份"/>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/sp_start_year"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown">
+
+        </android.support.v7.widget.AppCompatSpinner>
+    </LinearLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/et_user_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:hint="请输入学号"
+            android:text="3120003158"
+            android:inputType="number"
+            android:drawableLeft="@drawable/account"
+            android:drawableStart="@drawable/account"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        app:passwordToggleEnabled="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:drawableLeft="@drawable/password"
+            android:drawableStart="@drawable/password"
+            android:hint="请输入密码"
+            android:text="zb001222!"
+            android:inputType="textPassword"/>
+
+    </android.support.design.widget.TextInputLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_verify_code"
+                android:layout_width="120sp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableLeft="@drawable/captcha"
+                android:drawableStart="@drawable/captcha"
+                android:hint="验证码"
+                android:inputType="text"/>
+
+        </android.support.design.widget.TextInputLayout>
+        <ImageView
+            android:id="@+id/iv_verify_code"
+            android:layout_marginLeft="5dp"
+            android:layout_width="93dp"
+            android:layout_height="33dp"
+            android:layout_gravity="center_vertical"/>
+        <Button
+            android:id="@+id/btn_verify_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:onClick="refreshVerifyCode"
+            android:layout_gravity="center_vertical"
+            android:text="刷新"/>
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickLogin"
+        android:text="一键获取"
+        android:layout_margin="20dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:background="@color/firebrick"/>
+
+</LinearLayout>
+</ScrollView>
