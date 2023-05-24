@@ -4,24 +4,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+
 import android.util.Log;
 import android.view.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.kelin.scrollablepanel.library.ScrollablePanel;
 import com.wyu.config.ContextHolder;
 import com.wyu.config.MyState;
@@ -40,31 +40,31 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private CoordinatorLayout cl;
     private NavigationView navView;
-    private List<View> tabViews;
-    private TabLayout mTabTl;
-    private ViewPager mViewPager;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     private CourseGridPanelAdapter courseGridPanelAdapter;
     private ScrollablePanel courseTablePanel;
     private RecyclerView courseTableListRV;
     private CourseTableListAdapter courseTableListAdapter;
     private String weekList[];
+    private Integer WEEK_LIST_LENGTH = 20;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        weekList = new String[25];
-        for (int i = 0; i < 25; ++i) {
+        weekList = new String[WEEK_LIST_LENGTH];
+        for (int i = 0; i < WEEK_LIST_LENGTH; ++i) {
             weekList[i] = "第" + (i + 1) + "周";
         }
         Log.i(MyState.TAG, "主界面创建");
         MyFileHelper.getInfo();
         toolbar = (Toolbar) findViewById(R.id.custom_toolbar);
         cl = (CoordinatorLayout) findViewById(R.id.main_cl);
-        mTabTl = (TabLayout) findViewById(R.id.main_tab);
-        mViewPager = (ViewPager) findViewById(R.id.main_pageview);
+        tabLayout = (TabLayout) findViewById(R.id.main_tab);
+        viewPager = (ViewPager) findViewById(R.id.main_pageview);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navView = (NavigationView) findViewById(R.id.main_nav_view);
 
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.ic_cur_week:
                 if (courseGridPanelAdapter.getCurrentWeek() != ContextHolder.semWeekNow) {
                     updateCourseTable(ContextHolder.semWeekNow);
-                    mTabTl.getTabAt(1).setText("第" + (ContextHolder.semWeekNow) + "周");
+                    tabLayout.getTabAt(1).setText("第" + (ContextHolder.semWeekNow) + "周");
                 } else {
                     new AlertDialog.Builder(MainActivity.this).setTitle("修改当前周").setSingleChoiceItems(
                             weekList, ContextHolder.semWeekNow - 1 >= 0 ? ContextHolder.semWeekNow - 1 : 0,
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                                     ContextHolder.semWeekStart = ContextHolder.currentWeek - ContextHolder.semWeekNow + 1;
                                     updateCourseTable(ContextHolder.semWeekNow);
                                     updateCourseList(ContextHolder.semWeekNow);
-                                    mTabTl.getTabAt(1).setText("第" + (which + 1) + "周");
+                                    tabLayout.getTabAt(1).setText("第" + (which + 1) + "周");
                                     dialog.dismiss();
                                 }
                             }).setNegativeButton("取消", null).show();
@@ -192,10 +192,10 @@ public class MainActivity extends AppCompatActivity {
 
     //Tab和PageView关联
     private void relateTabAndViewPager() {
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabTl));
-        mTabTl.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-        mTabTl.getTabAt(1).setText("第" + (ContextHolder.semWeekNow) + "周");
-        mTabTl.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+        tabLayout.getTabAt(1).setText("第" + (ContextHolder.semWeekNow) + "周");
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
             }
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     updateCourseTable(which + 1);
-                                    mTabTl.getTabAt(1).setText("第" + (which + 1) + "周");
+                                    tabLayout.getTabAt(1).setText("第" + (which + 1) + "周");
                                     dialog.dismiss();
                                 }
                             }).setNegativeButton("取消", null).show();
@@ -223,43 +223,17 @@ public class MainActivity extends AppCompatActivity {
 
     //ViewPager相关
     private void initViewPager() {
-
-        //------------------------ViewPager用法----------------------------------------------
         LayoutInflater inflater = getLayoutInflater();
         View view1 = inflater.inflate(R.layout.fragment_course_list, null);
         View view2 = inflater.inflate(R.layout.fragment_course_table, null);
         //初始化子布局
         initCourseList(view1);
         initCourseTable(view2);
-        tabViews = new ArrayList<View>();
-        tabViews.add(view1);
-        tabViews.add(view2);
-        PagerAdapter pagerAdapter = new PagerAdapter() {
-            @Override
-            public int getCount() {
-                return tabViews.size();
-            }
-
-            @Override
-            public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
-                return view == o;
-            }
-
-            @Override
-            public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-                container.removeView(tabViews.get(position));
-            }
-
-            @NonNull
-            @Override
-            public Object instantiateItem(@NonNull ViewGroup container, int position) {
-                container.addView(tabViews.get(position));
-
-                return tabViews.get(position);
-            }
-        };
-        mViewPager.setAdapter(pagerAdapter);
-        //=========================================================================
+        List<View> tabViewList = new ArrayList<>();
+        tabViewList.add(view1);
+        tabViewList.add(view2);
+        CustomPagerAdapter pagerAdapter = new CustomPagerAdapter(tabViewList);
+        viewPager.setAdapter(pagerAdapter);
     }
 
     private void initCourseList(View view) {

@@ -3,19 +3,9 @@ package com.wyu;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
-
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,21 +13,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.textfield.TextInputEditText;
+import com.wyu.config.ContextHolder;
+import com.wyu.config.Form;
+import com.wyu.config.MyState;
+import com.wyu.data.*;
+import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.wyu.data.CourseCard;
-import com.wyu.data.CourseList;
-import com.wyu.data.CourseTableDivide;
-import com.wyu.data.DataConf;
-import com.wyu.data.ScoresList;
-import com.wyu.R;
-import com.wyu.config.ContextHolder;
-import com.wyu.config.Form;
-import com.wyu.config.MyState;
-import com.wyu.util.ToastUtil;
 
 public class DataImportActivity extends AppCompatActivity {
 
