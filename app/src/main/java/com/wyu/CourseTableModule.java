@@ -6,8 +6,7 @@ import android.util.Log;
 
 import com.wyu.model.CourseVO;
 import com.wyu.config.ContextHolder;
-import com.wyu.util.CommonUtil;
-import com.wyu.util.Resp;
+import com.wyu.util.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -16,8 +15,6 @@ import com.wyu.data.Course;
 import com.wyu.data.CourseList;
 import com.wyu.config.Form;
 import com.wyu.config.MyState;
-import com.wyu.util.MyFileHelper;
-import com.wyu.util.MyOkHttp2;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
 import org.jsoup.Jsoup;
@@ -32,6 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CourseTableModule extends Form {
     private Handler handler;
@@ -49,8 +50,23 @@ public class CourseTableModule extends Form {
     }
 
     public void getCourseList(String term) {
+        ExecutorService pool = Executors.newFixedThreadPool(5, new ThreadFactory() {
+            private final AtomicInteger threadNumber = new AtomicInteger(1);
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, "novo-pool-" + threadNumber.getAndIncrement());
+                if (t.isDaemon())
+                    t.setDaemon(false);
+                if (t.getPriority() != Thread.NORM_PRIORITY)
+                    t.setPriority(Thread.NORM_PRIORITY);
+                return t;
+            }
+        });
         for (int i = 1; i <= 20; i++) {
-            getCourseList(term, i, account);
+            int j = i;
+            pool.execute(() -> {
+                getCourseList(term, j, account);
+            });
         }
     }
 

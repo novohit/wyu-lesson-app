@@ -24,11 +24,17 @@ import com.wyu.config.Form;
 import com.wyu.config.MyState;
 import com.wyu.data.*;
 import com.wyu.util.CommonUtil;
+import com.wyu.util.Constant;
 import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DataImportActivity extends AppCompatActivity {
 
@@ -37,7 +43,6 @@ public class DataImportActivity extends AppCompatActivity {
 
     private AppCompatSpinner spStartYear;
     private List<String> stYearList;
-    private int stYearPos, stSemesterPos, edSemesterPos;
 
 
     private ImageView loginIVerify;
@@ -88,23 +93,22 @@ public class DataImportActivity extends AppCompatActivity {
                     if (!Form.getAccount().equals(ContextHolder.userNumber)) {
                         ContextHolder.resetUserInfo(Form.getAccount());
                     }
-                    ContextHolder.firstYearPos = stYearPos;
                     ContextHolder.firstYear = spStartYear.getSelectedItem().toString();
 
                     beginCount = true;
                     cnt = suc = 0;
 
                     String currentTerm = CommonUtil.getCurrentTerm();
+
+                    long start = System.currentTimeMillis();
                     courseTableModule.getCourseList(currentTerm);
-                    try {
-                        Thread.sleep(2000L);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                    getOtherTermCourses(currentTerm);
+                    while (ContextHolder.data.get(currentTerm) == null || ContextHolder.data.get(currentTerm).size() != 20) {
+
                     }
-                    System.out.println(ContextHolder.data);
+                    Log.i(MyState.TAG, "耗时：" + (System.currentTimeMillis() - start) + "ms");
                     scoresListModule.getScoresList(currentTerm);
                     Log.i(MyState.TAG, "正在获取学期：" + currentTerm);
-
                     break;
                 case MyState.SUCCESS:
                     suc++;
@@ -156,6 +160,34 @@ public class DataImportActivity extends AppCompatActivity {
         }
     };
 
+    private void getOtherTermCourses(String defaultTerm) {
+        ExecutorService pool = Executors.newFixedThreadPool(5, new ThreadFactory() {
+            private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, "novo-pool-" + threadNumber.getAndIncrement());
+                if (t.isDaemon())
+                    t.setDaemon(false);
+                if (t.getPriority() != Thread.NORM_PRIORITY)
+                    t.setPriority(Thread.NORM_PRIORITY);
+                return t;
+            }
+        });
+        for (int i = 0; i < Constant.SELECTED_TERM_LIST.length; i++) {
+            String term = Constant.SELECTED_TERM_LIST[i];
+            if (!term.equals(defaultTerm)) {
+                pool.execute(() -> {
+                    Log.i(MyState.TAG, "正在查询" + term + "的课表");
+                    courseTableModule.getCourseList(term);
+                });
+            }
+        }
+    }
+
+    public DataImportActivity() {
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,7 +196,7 @@ public class DataImportActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.data_ipt_tab);
         viewPager = (ViewPager) findViewById(R.id.data_ipt_pageview);
 
-        toolbar.setTitle("数据导入");
+        toolbar.setTitle("登录");
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -257,9 +289,7 @@ public class DataImportActivity extends AppCompatActivity {
     //=============================================================================================
     //Login相关
     public void onClickLogin(View view) {
-        stYearPos = spStartYear.getSelectedItemPosition();
 
-        Log.i(MyState.TAG, stYearPos + " " + stSemesterPos + " " + edSemesterPos + "");
         String userName = loginUserNumber.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
         String verifyCode = loginVerifyCode.getText().toString().trim();

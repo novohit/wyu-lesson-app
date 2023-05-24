@@ -10,6 +10,7 @@ import com.wyu.config.ContextHolder;
 import com.wyu.config.MyState;
 import com.wyu.model.Course;
 import com.wyu.model.CourseVO;
+import com.wyu.util.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class CourseTodayListAdapter extends RecyclerView.Adapter<CourseTodayList
         holder.teacher.setText(course.getTeacher());
         holder.location.setText(course.getLocation());
         holder.week.setText(course.getWeek() + "周");
-        holder.section.setText(CourseGridPanelAdapter.weekList[ContextHolder.dayOfWeek] + " " + course.getSection() + "节");
+        holder.section.setText(Constant.DAY_OF_WEEK_LIST[ContextHolder.dayOfWeek] + " " + course.getSection() + "节");
     }
 
     @Override

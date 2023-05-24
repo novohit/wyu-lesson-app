@@ -27,6 +27,7 @@ import com.wyu.config.ContextHolder;
 import com.wyu.config.MyState;
 import com.wyu.model.CourseVO;
 import com.wyu.util.CommonUtil;
+import com.wyu.util.Constant;
 import com.wyu.util.MyFileHelper;
 import com.wyu.util.ToastUtil;
 
@@ -41,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
     private ActionBarDrawerToggle drawerToggle;
-    private CoordinatorLayout cl;
-    private NavigationView navView;
+    private CoordinatorLayout coordinatorLayout;
+    private NavigationView navigationView;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -50,26 +51,21 @@ public class MainActivity extends AppCompatActivity {
     private ScrollablePanel scrollablePanel;
     private RecyclerView recyclerView;
     private CourseTodayListAdapter courseTodayListAdapter;
-    private String[] weekList;
-    private static final int WEEK_LIST_LENGTH = 20;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        weekList = new String[WEEK_LIST_LENGTH];
-        for (int i = 0; i < WEEK_LIST_LENGTH; ++i) {
-            weekList[i] = "第" + (i + 1) + "周";
-        }
+
         Log.i(MyState.TAG, "主界面创建");
         MyFileHelper.getInfo();
         toolbar = (Toolbar) findViewById(R.id.custom_toolbar);
-        cl = (CoordinatorLayout) findViewById(R.id.main_cl);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_cl);
         tabLayout = (TabLayout) findViewById(R.id.main_tab);
         viewPager = (ViewPager) findViewById(R.id.main_pageview);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navView = (NavigationView) findViewById(R.id.main_nav_view);
+        navigationView = (NavigationView) findViewById(R.id.main_nav_view);
 
         initView();
         relateTabAndViewPager();
@@ -89,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager windowManager = (WindowManager) getSystemService(
                         getApplicationContext().WINDOW_SERVICE);
                 Display display = windowManager.getDefaultDisplay();
-                cl.layout(navView.getRight(),
+                coordinatorLayout.layout(navigationView.getRight(),
                         0,
-                        display.getWidth() + navView.getRight(),
+                        display.getWidth() + navigationView.getRight(),
                         display.getHeight());
                 super.onDrawerSlide(drawerView, slideOffset);
             }
@@ -104,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         }
-        navView.setCheckedItem(R.id.nav_import);
-        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        navigationView.setCheckedItem(R.id.nav_import);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
@@ -156,21 +152,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.ic_mark:
-                if (ContextHolder.myCourseTableList == null) {
-                    new AlertDialog.Builder(MainActivity.this).setTitle("注意").setMessage("请先导入数据!").setPositiveButton("确定", null).show();
-                } else {
-                    new AlertDialog.Builder(MainActivity.this).setTitle("更改学期").setSingleChoiceItems(
-                            ContextHolder.myCourseTableList.toArray(new String[ContextHolder.myCourseTableList.size()]), ContextHolder.curSemPos,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ContextHolder.curSemPos = which;
-                                    updateCourseGrid(ContextHolder.myCourseTableList.get(which));
-                                    //updateCourseList(ContextHolder.myCourseTableList.get(which));
-                                    dialog.dismiss();
-
-                                }
-                            }).setNegativeButton("取消", null).show();
-                }
+                new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的学期").setSingleChoiceItems(
+                        Constant.SELECTED_TERM_LIST, 0,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                updateCourseGrid(Constant.SELECTED_TERM_LIST[which], ContextHolder.currentWeek);
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("取消", null).show();
                 break;
             case R.id.ic_settings:
                 ToastUtil.show("TODO");
@@ -198,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 1) {
                     new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的周").setSingleChoiceItems(
-                            weekList, courseGridPanelAdapter.getSelectedWeek() - 1 >= 0 ? courseGridPanelAdapter.getSelectedWeek() - 1 : 0,
+                            Constant.SELECTED_WEEK_LIST, courseGridPanelAdapter.getSelectedWeek() - 1 >= 0 ? courseGridPanelAdapter.getSelectedWeek() - 1 : 0,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     updateCourseGrid(which + 1);

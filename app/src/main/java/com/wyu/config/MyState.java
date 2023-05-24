@@ -11,6 +11,7 @@ public class MyState {
     public static final int FILE_ERROR = -444;
     public static final int INCORRECT_HTML = -333;
     public static final int JSON_ERROR = -123456;
+    public static final int BACK = -99999;
 
     public static final String TAG = "mtest";
 

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wyu.model.Course;
 import com.wyu.model.CourseVO;
 import com.wyu.config.ContextHolder;
+import com.wyu.util.Constant;
 import com.wyu.util.MyApplication;
 import com.kelin.scrollablepanel.library.PanelAdapter;
 
@@ -28,25 +29,27 @@ public class CourseGridPanelAdapter extends PanelAdapter {
     private Map<Integer, CourseVO> selectedTermCourses;
 
 
-    private static final int firstWidth = ContextHolder.dip2px(MyApplication.getContext(), 18);
-    private static final int firstHeight = ContextHolder.dip2px(MyApplication.getContext(), 20);
-    private static final int normalHeight = ContextHolder.dip2px(MyApplication.getContext(), 110);
-    private static final int normalWidth = (ContextHolder.screenWidth - firstWidth) / 7;
-    private static final int[] colors = new int[]{R.color.cadetblue, R.color.fuchsia, R.color.orange, R.color.brown
+    private static final int FIRST_WIDTH = ContextHolder.dip2px(MyApplication.getContext(), 18);
+    private static final int FIRST_HEIGHT = ContextHolder.dip2px(MyApplication.getContext(), 20);
+    private static final int NORMAL_HEIGHT = ContextHolder.dip2px(MyApplication.getContext(), 110);
+    private static final int NORMAL_WIDTH = (ContextHolder.screenWidth - FIRST_WIDTH) / 7;
+
+    private static final int[] COLORS = new int[]{R.color.cadetblue, R.color.fuchsia, R.color.orange, R.color.brown
             , R.color.purple, R.color.plum, R.color.green, R.color.limegreen
             , R.color.slateblue, R.color.aliceblue, R.color.blanchedalmond, R.color.firebrick
             , R.color.lime, R.color.yellow, R.color.wheat, R.color.khaki
             , R.color.mistyrose, R.color.chartreuse, R.color.aqua, R.color.palevioletred};
-    public static final String[] weekList = new String[]{"", "周一", "周二", "周三", "周四", "周五", "周六", "周日"};
-    private static final String[] sectionList = new String[]{"", "01\n02", "03\n04", "05\n06", "07\n08", "09\n10", "11\n12"};
 
-    private Course[][] grid = new Course[sectionList.length][weekList.length];
+
+    private Course[][] grid = new Course[Constant.SECTION_LIST.length][Constant.DAY_OF_WEEK_LIST.length];
 
     public void setSelectedWeek(int selectedWeek) {
         selectedTermCourses = ContextHolder.data.get(selectedTerm);
         this.selectedWeek = selectedWeek;
-        Log.i("week", "切换为第" + selectedWeek + "周");
-        updateGrid();
+        if (selectedTermCourses != null) {
+            Log.i("week", "切换为第" + selectedWeek + "周");
+            updateGrid();
+        }
     }
 
     public int getSelectedWeek() {
@@ -55,11 +58,15 @@ public class CourseGridPanelAdapter extends PanelAdapter {
 
     public void setSelectedTerm(String selectedTerm) {
         selectedTermCourses = ContextHolder.data.get(selectedTerm);
-        updateGrid();
+        this.selectedTerm = selectedTerm;
+        if (selectedTermCourses != null) {
+            Log.i("week", "切换为第" + selectedTerm + "学期");
+            updateGrid();
+        }
     }
 
     private void updateGrid() {
-        grid = new Course[sectionList.length][weekList.length];
+        grid = new Course[Constant.SECTION_LIST.length][Constant.DAY_OF_WEEK_LIST.length];
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[0].length; j++) {
                 grid[i][j] = null;
@@ -136,24 +143,24 @@ public class CourseGridPanelAdapter extends PanelAdapter {
             titleViewHolder.titleLinearlayout.setBackgroundColor(0x00000000);
         }
         if (row == 0 && column == 0) {
-            titleViewHolder.params.width = firstWidth;
-            titleViewHolder.params.height = firstHeight;
+            titleViewHolder.params.width = FIRST_WIDTH;
+            titleViewHolder.params.height = FIRST_HEIGHT;
             titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);
             titleViewHolder.titleTextView.setText("");
         } else if (row == 0) {
-            titleViewHolder.params.width = normalWidth;
-            titleViewHolder.params.height = firstHeight;
+            titleViewHolder.params.width = NORMAL_WIDTH;
+            titleViewHolder.params.height = FIRST_HEIGHT;
             titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);
             titleViewHolder.titleCardView.setMinimumWidth(50);
-            titleViewHolder.titleTextView.setText(weekList[column]);
+            titleViewHolder.titleTextView.setText(Constant.DAY_OF_WEEK_LIST[column]);
         } else if (column == 0) {
-            titleViewHolder.params.width = firstWidth;
-            titleViewHolder.params.height = normalHeight;
+            titleViewHolder.params.width = FIRST_WIDTH;
+            titleViewHolder.params.height = NORMAL_HEIGHT;
             titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);
-            titleViewHolder.titleTextView.setText(sectionList[row]);
+            titleViewHolder.titleTextView.setText(Constant.SECTION_LIST[row]);
         } else {
-            titleViewHolder.params.width = normalWidth;
-            titleViewHolder.params.height = normalHeight;
+            titleViewHolder.params.width = NORMAL_WIDTH;
+            titleViewHolder.params.height = NORMAL_HEIGHT;
             titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);
             // 有课
             if (course != null) {
@@ -161,9 +168,9 @@ public class CourseGridPanelAdapter extends PanelAdapter {
                 try {
                     id = Integer.parseInt(course.getId());
                 } catch (NumberFormatException e) {
-                    throw new RuntimeException(e);
+                    //throw new RuntimeException(e);
                 }
-                titleViewHolder.titleCardView.setCardBackgroundColor(MyApplication.getContext().getResources().getColor(colors[id % colors.length]));
+                titleViewHolder.titleCardView.setCardBackgroundColor(MyApplication.getContext().getResources().getColor(COLORS[id % COLORS.length]));
 
 //                if (courseCards.get(loc).zhou[currentWeek]) {
 //                    titleViewHolder.titleCardView.setCardBackgroundColor(MyApplication.getContext().getResources().getColor(colors[courseCards.get(loc).no % 20]));
