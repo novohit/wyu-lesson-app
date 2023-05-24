@@ -25,15 +25,18 @@ import com.google.android.material.tabs.TabLayout;
 import com.kelin.scrollablepanel.library.ScrollablePanel;
 import com.wyu.config.ContextHolder;
 import com.wyu.config.MyState;
+import com.wyu.model.CourseVO;
+import com.wyu.util.CommonUtil;
 import com.wyu.util.MyFileHelper;
 import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DrawerLayout mDrawerLayout;
+    private DrawerLayout drawerLayout;
 
     private Toolbar toolbar;
 
@@ -44,11 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
 
     private CourseGridPanelAdapter courseGridPanelAdapter;
-    private ScrollablePanel courseTablePanel;
-    private RecyclerView courseTableListRV;
-    private CourseTableListAdapter courseTableListAdapter;
-    private String weekList[];
-    private Integer WEEK_LIST_LENGTH = 20;
+    private ScrollablePanel scrollablePanel;
+    private RecyclerView recyclerView;
+    private CourseTodayListAdapter courseTodayListAdapter;
+    private String[] weekList;
+    private static final int WEEK_LIST_LENGTH = 20;
 
 
     @Override
@@ -65,22 +68,22 @@ public class MainActivity extends AppCompatActivity {
         cl = (CoordinatorLayout) findViewById(R.id.main_cl);
         tabLayout = (TabLayout) findViewById(R.id.main_tab);
         viewPager = (ViewPager) findViewById(R.id.main_pageview);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navView = (NavigationView) findViewById(R.id.main_nav_view);
 
         initView();
         relateTabAndViewPager();
         initViewPager();
         if (ContextHolder.myCourseTableList != null) {
-//            updateCourseTable(EnvironmentPool.semWeekNow, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
-//            updateCourseList(EnvironmentPool.semWeekNow, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
+//            updateCourseGrid(EnvironmentPool.currentWeek, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
+//            updateCourseList(EnvironmentPool.currentWeek, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
         }
 
     }
 
     private void initView() {
         setSupportActionBar(toolbar);
-        drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 WindowManager windowManager = (WindowManager) getSystemService(
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         };
-        mDrawerLayout.addDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -117,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         new AlertDialog.Builder(MainActivity.this).setTitle("关于").setMessage("https://github.com/novohit").setPositiveButton("确定", null).show();
                         break;
                 }
-                mDrawerLayout.closeDrawers();
+                drawerLayout.closeDrawers();
                 return true;
             }
         });
@@ -144,25 +147,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
+                drawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.ic_cur_week:
-                if (courseGridPanelAdapter.getCurrentWeek() != ContextHolder.semWeekNow) {
-                    updateCourseTable(ContextHolder.semWeekNow);
-                    tabLayout.getTabAt(1).setText("第" + (ContextHolder.semWeekNow) + "周");
-                } else {
-                    new AlertDialog.Builder(MainActivity.this).setTitle("修改当前周").setSingleChoiceItems(
-                            weekList, ContextHolder.semWeekNow - 1 >= 0 ? ContextHolder.semWeekNow - 1 : 0,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ContextHolder.semWeekNow = which + 1;
-                                    ContextHolder.semWeekStart = ContextHolder.currentWeek - ContextHolder.semWeekNow + 1;
-                                    updateCourseTable(ContextHolder.semWeekNow);
-                                    updateCourseList(ContextHolder.semWeekNow);
-                                    tabLayout.getTabAt(1).setText("第" + (which + 1) + "周");
-                                    dialog.dismiss();
-                                }
-                            }).setNegativeButton("取消", null).show();
+                if (courseGridPanelAdapter.getSelectedWeek() != ContextHolder.currentWeek) {
+                    updateCourseGrid(ContextHolder.currentWeek);
+                    tabLayout.getTabAt(1).setText("第" + (ContextHolder.currentWeek) + "周");
                 }
                 break;
             case R.id.ic_mark:
@@ -174,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     ContextHolder.curSemPos = which;
-                                    updateCourseTable(ContextHolder.myCourseTableList.get(which));
-                                    updateCourseList(ContextHolder.myCourseTableList.get(which));
+                                    updateCourseGrid(ContextHolder.myCourseTableList.get(which));
+                                    //updateCourseList(ContextHolder.myCourseTableList.get(which));
                                     dialog.dismiss();
 
                                 }
@@ -183,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.ic_settings:
-                ToastUtil.show("敬请期待");
+                ToastUtil.show("TODO");
                 break;
             default:
         }
@@ -194,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
     private void relateTabAndViewPager() {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
-        tabLayout.getTabAt(1).setText("第" + (ContextHolder.semWeekNow) + "周");
+        tabLayout.getTabAt(1).setText("第" + (ContextHolder.currentWeek) + "周");
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -208,10 +198,10 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 1) {
                     new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的周").setSingleChoiceItems(
-                            weekList, courseGridPanelAdapter.getCurrentWeek() - 1 >= 0 ? courseGridPanelAdapter.getCurrentWeek() - 1 : 0,
+                            weekList, courseGridPanelAdapter.getSelectedWeek() - 1 >= 0 ? courseGridPanelAdapter.getSelectedWeek() - 1 : 0,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    updateCourseTable(which + 1);
+                                    updateCourseGrid(which + 1);
                                     tabLayout.getTabAt(1).setText("第" + (which + 1) + "周");
                                     dialog.dismiss();
                                 }
@@ -228,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         View view2 = inflater.inflate(R.layout.fragment_course_table, null);
         //初始化子布局
         initCourseList(view1);
-        initCourseTable(view2);
+        initCourseGrid(view2);
         List<View> tabViewList = new ArrayList<>();
         tabViewList.add(view1);
         tabViewList.add(view2);
@@ -238,51 +228,54 @@ public class MainActivity extends AppCompatActivity {
 
     private void initCourseList(View view) {
 
-        courseTableListAdapter = new CourseTableListAdapter("202201", ContextHolder.semWeekNow);
-        courseTableListRV = (RecyclerView) view.findViewById(R.id.course_list_recycler_view);
-        courseTableListRV.setAdapter(courseTableListAdapter);
-        courseTableListRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        courseTodayListAdapter = new CourseTodayListAdapter();
+        recyclerView = (RecyclerView) view.findViewById(R.id.course_list_recycler_view);
+        recyclerView.setAdapter(courseTodayListAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
     }
 
-    private void initCourseTable(View view) {
-
-        //testPanelAdapter = new TestPanelAdapter(EnvironmentPool.allSemesters.get(EnvironmentPool.curSemPos), EnvironmentPool.semWeekNow);
-        courseGridPanelAdapter = new CourseGridPanelAdapter("202201", ContextHolder.semWeekNow);
-        courseTablePanel = (ScrollablePanel) view.findViewById(R.id.scrollable_panel);
-        courseTablePanel.setPanelAdapter(courseGridPanelAdapter);
+    private void initCourseGrid(View view) {
+        courseGridPanelAdapter = new CourseGridPanelAdapter(CommonUtil.getCurrentTerm(), ContextHolder.currentWeek);
+        scrollablePanel = (ScrollablePanel) view.findViewById(R.id.scrollable_panel);
+        scrollablePanel.setPanelAdapter(courseGridPanelAdapter);
     }
 
-    public void updateCourseList(int week) {
-        courseTableListAdapter.setCurrentWeek(week);
-        courseTableListAdapter.notifyDataSetChanged();
+//    public void updateCourseList(int week) {
+//        courseTodayListAdapter.setCurrentWeek(week);
+//        courseTodayListAdapter.notifyDataSetChanged();
+//    }
+//
+//    public void updateCourseList(String term) {
+//        courseTodayListAdapter.setTerm(term);
+//    }
+//
+//    public void updateCourseList(String term, int week) {
+//        courseTodayListAdapter.setCurrentWeek(week);
+//        courseTodayListAdapter.setTerm(term);
+//        courseTodayListAdapter.notifyDataSetChanged();
+//    }
+
+    public void updateCourseGrid(int week) {
+        courseGridPanelAdapter.setSelectedWeek(week);
+        scrollablePanel.notifyDataSetChanged();
     }
 
-    public void updateCourseList(String term) {
-        courseTableListAdapter.setTerm(term);
+    public void updateCourseGrid(String term) {
+        courseGridPanelAdapter.setSelectedTerm(term);
+        scrollablePanel.notifyDataSetChanged();
     }
 
-    public void updateCourseList(int week, String term) {
-        courseTableListAdapter.setCurrentWeek(week);
-        courseTableListAdapter.setTerm(term);
-        courseTableListAdapter.notifyDataSetChanged();
+    public void updateCourseGrid(String term, int week) {
+        courseGridPanelAdapter.setSelectedWeek(week);
+        courseTodayListAdapter.notifyDataSetChanged();
+
+        courseGridPanelAdapter.setSelectedTerm(term);
+        scrollablePanel.notifyDataSetChanged();
     }
 
-    public void updateCourseTable(int week) {
-        courseGridPanelAdapter.setCurrentWeek(week);
-        courseTablePanel.notifyDataSetChanged();
-    }
-
-    public void updateCourseTable(String term) {
-        courseGridPanelAdapter.setTerm(term);
-        courseTablePanel.notifyDataSetChanged();
-    }
-
-    public void updateCourseTable(int week, String term) {
-        courseGridPanelAdapter.setCurrentWeek(week);
-        courseTableListAdapter.notifyDataSetChanged();
-
-        courseGridPanelAdapter.setTerm(term);
-        courseTablePanel.notifyDataSetChanged();
+    public void updateCourseList() {
+        courseTodayListAdapter.updateList();
+        courseTodayListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -291,9 +284,21 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
             if (resultCode == 1) {
                 int state = data.getIntExtra("state", -1);
-                if (state > 0) {
-                    updateCourseTable(ContextHolder.myCourseTableList.get(ContextHolder.curSemPos));
-                    updateCourseList(ContextHolder.myCourseTableList.get(ContextHolder.curSemPos));
+                // 登录成功
+                if (state >= 0) {
+                    Log.i(MyState.TAG, "onActivityResult");
+                    String currentTerm = CommonUtil.getCurrentTerm();
+                    Map<Integer, CourseVO> currentTermData = ContextHolder.data.get(currentTerm);
+                    assert currentTermData != null;
+                    CourseVO courseVO = currentTermData.get(1);
+                    assert courseVO != null;
+                    Map<String, String> date = courseVO.getDate();
+                    String startStr = date.get("7");
+                    int currentWeek = CommonUtil.getCurrentWeek(startStr);
+                    ContextHolder.currentWeek = currentWeek;
+                    tabLayout.getTabAt(1).setText("第" + currentWeek + "周");
+                    updateCourseGrid(currentTerm, currentWeek);
+                    updateCourseList();
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.wyu.model;
 
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zwx
@@ -11,6 +12,7 @@ public class CourseVO {
 
     private List<Course> courseList;
 
+    private Map<String, String> date;
 
     private Integer courseCount;
 
@@ -18,8 +20,15 @@ public class CourseVO {
 
     }
 
-    public CourseVO(List<Course> courseList) {
-
+    public CourseVO(List<Course> courseList, Map<String, String> date) {
+        this.date = date;
+        this.courseList = courseList;
+        int sum = 0;
+        for (Course course : courseList) {
+            int count = course.getCount();
+            sum += count;
+        }
+        this.courseCount = sum;
     }
 
     public List<Course> getCourseList() {
@@ -36,5 +45,13 @@ public class CourseVO {
 
     public void setCourseCount(Integer courseCount) {
         this.courseCount = courseCount;
+    }
+
+    public Map<String, String> getDate() {
+        return date;
+    }
+
+    public void setDate(Map<String, String> date) {
+        this.date = date;
     }
 }

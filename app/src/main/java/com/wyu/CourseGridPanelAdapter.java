@@ -21,11 +21,11 @@ import java.util.Map;
 
 public class CourseGridPanelAdapter extends PanelAdapter {
 
-    private int currentWeek; //当前周
+    private int selectedWeek; //当前周
 
-    private String term;
+    private String selectedTerm;
 
-    private Map<Integer, CourseVO> currentTermCourses;
+    private Map<Integer, CourseVO> selectedTermCourses;
 
 
     private static final int firstWidth = ContextHolder.dip2px(MyApplication.getContext(), 18);
@@ -37,28 +37,28 @@ public class CourseGridPanelAdapter extends PanelAdapter {
             , R.color.slateblue, R.color.aliceblue, R.color.blanchedalmond, R.color.firebrick
             , R.color.lime, R.color.yellow, R.color.wheat, R.color.khaki
             , R.color.mistyrose, R.color.chartreuse, R.color.aqua, R.color.palevioletred};
-    private static final String[] weekList = new String[]{"", "周一", "周二", "周3", "周四", "周五", "周六", "周日"};
+    public static final String[] weekList = new String[]{"", "周一", "周二", "周三", "周四", "周五", "周六", "周日"};
     private static final String[] sectionList = new String[]{"", "01\n02", "03\n04", "05\n06", "07\n08", "09\n10", "11\n12"};
 
     private Course[][] grid = new Course[sectionList.length][weekList.length];
 
-    public void setCurrentWeek(int currentWeek) {
-        currentTermCourses = ContextHolder.data.get(term);
-        this.currentWeek = currentWeek;
-        Log.i("week", "切换为第" + currentWeek + "周");
-        updateCards();
+    public void setSelectedWeek(int selectedWeek) {
+        selectedTermCourses = ContextHolder.data.get(selectedTerm);
+        this.selectedWeek = selectedWeek;
+        Log.i("week", "切换为第" + selectedWeek + "周");
+        updateGrid();
     }
 
-    public int getCurrentWeek() {
-        return currentWeek;
+    public int getSelectedWeek() {
+        return selectedWeek;
     }
 
-    public void setTerm(String term) {
-        currentTermCourses = ContextHolder.data.get(term);
-        updateCards();
+    public void setSelectedTerm(String selectedTerm) {
+        selectedTermCourses = ContextHolder.data.get(selectedTerm);
+        updateGrid();
     }
 
-    private void updateCards() {
+    private void updateGrid() {
         grid = new Course[sectionList.length][weekList.length];
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[0].length; j++) {
@@ -66,8 +66,8 @@ public class CourseGridPanelAdapter extends PanelAdapter {
             }
         }
 
-        CourseVO currentWeekCourses = currentTermCourses.get(currentWeek);
-        if (currentWeekCourses != null) {
+        CourseVO currentWeekCourses = selectedTermCourses.get(selectedWeek);
+        if (currentWeekCourses != null && currentWeekCourses.getCourseList() != null) {
             List<Course> courseList = currentWeekCourses.getCourseList();
             for (Course course : courseList) {
                 String section = course.getSection();
@@ -79,15 +79,16 @@ public class CourseGridPanelAdapter extends PanelAdapter {
         }
     }
 
-    public CourseGridPanelAdapter(String term, int currentWeek) {
-        this.currentWeek = currentWeek;
-        this.term = term;
-        if (term == null || ContextHolder.data == null || ContextHolder.data.get(term) == null) {
-            currentTermCourses = new HashMap<>();
+    public CourseGridPanelAdapter(String selectedTerm, int selectedWeek) {
+        this.selectedWeek = selectedWeek;
+        this.selectedTerm = selectedTerm;
+        if (selectedTerm == null || ContextHolder.data == null || ContextHolder.data.get(selectedTerm) == null) {
+            selectedTermCourses = new HashMap<>();
+            ContextHolder.data.put(selectedTerm, selectedTermCourses);
         } else {
-            currentTermCourses = ContextHolder.data.get(term);
+            selectedTermCourses = ContextHolder.data.get(selectedTerm);
         }
-        updateCards();
+        updateGrid();
     }
 
     private List<Integer> getRow(String section) {
@@ -123,12 +124,13 @@ public class CourseGridPanelAdapter extends PanelAdapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int row, int column) {
+        //Log.i(MyState.TAG, "grid onBindViewHolder" + "(" + row + "," + column + ")");
         TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
         Course course = grid[row][column];
         //titleViewHolder.params.height;//设置当前控件布局的高度
         //titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);//将设置好的布局参数应用到控件中
         // 当天高亮
-        if (column == ContextHolder.currentWeekDay && currentWeek == ContextHolder.semWeekNow) {
+        if (column == ContextHolder.dayOfWeek && selectedWeek == ContextHolder.currentWeek) {
             titleViewHolder.titleLinearlayout.setBackgroundColor(MyApplication.getContext().getResources().getColor(R.color.lightskyblue));
         } else {
             titleViewHolder.titleLinearlayout.setBackgroundColor(0x00000000);

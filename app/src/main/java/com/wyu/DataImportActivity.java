@@ -9,16 +9,13 @@ import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
@@ -26,6 +23,7 @@ import com.wyu.config.ContextHolder;
 import com.wyu.config.Form;
 import com.wyu.config.MyState;
 import com.wyu.data.*;
+import com.wyu.util.CommonUtil;
 import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -34,9 +32,8 @@ import java.util.List;
 
 public class DataImportActivity extends AppCompatActivity {
 
-    private List<View> tabViews;
-    private TabLayout mTabTl;
-    private ViewPager mViewPager;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     private AppCompatSpinner spStartYear;
     private List<String> stYearList;
@@ -97,16 +94,16 @@ public class DataImportActivity extends AppCompatActivity {
                     beginCount = true;
                     cnt = suc = 0;
 
-                    String str = "202201";
-                    courseTableModule.getCourseList(str);
+                    String currentTerm = CommonUtil.getCurrentTerm();
+                    courseTableModule.getCourseList(currentTerm);
                     try {
                         Thread.sleep(2000L);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                     System.out.println(ContextHolder.data);
-                    scoresListModule.getScoresList(str);
-                    Log.i(MyState.TAG, "正在获取学期：" + str);
+                    scoresListModule.getScoresList(currentTerm);
+                    Log.i(MyState.TAG, "正在获取学期：" + currentTerm);
 
                     break;
                 case MyState.SUCCESS:
@@ -164,8 +161,8 @@ public class DataImportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_import);
         Toolbar toolbar = (Toolbar) findViewById(R.id.custom_toolbar);
-        mTabTl = (TabLayout) findViewById(R.id.data_ipt_tab);
-        mViewPager = (ViewPager) findViewById(R.id.data_ipt_pageview);
+        tabLayout = (TabLayout) findViewById(R.id.data_ipt_tab);
+        viewPager = (ViewPager) findViewById(R.id.data_ipt_pageview);
 
         toolbar.setTitle("数据导入");
         setSupportActionBar(toolbar);
@@ -197,46 +194,21 @@ public class DataImportActivity extends AppCompatActivity {
 
     //Tab和PageView关联
     private void relateTabAndViewPager() {
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabTl));
-        mTabTl.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
     }
 
     //ViewPager相关
     private void initViewPager() {
-
-        //------------------------ViewPager用法----------------------------------------------
         LayoutInflater inflater = getLayoutInflater();
         View view1 = inflater.inflate(R.layout.fragment_login, null);
         View view2 = inflater.inflate(R.layout.fragment_course_table, null);
         initLogin(view1);
-        tabViews = new ArrayList<View>();
-        tabViews.add(view1);
-        tabViews.add(view2);
-        PagerAdapter pagerAdapter = new PagerAdapter() {
-            @Override
-            public int getCount() {
-                return tabViews.size();
-            }
-
-            @Override
-            public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
-                return view == o;
-            }
-
-            @Override
-            public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-                container.removeView(tabViews.get(position));
-            }
-
-            @NonNull
-            @Override
-            public Object instantiateItem(@NonNull ViewGroup container, int position) {
-                container.addView(tabViews.get(position));
-                return tabViews.get(position);
-            }
-        };
-        mViewPager.setAdapter(pagerAdapter);
-        //=========================================================================
+        List<View> viewList = new ArrayList<>();
+        viewList.add(view1);
+        viewList.add(view2);
+        CustomPagerAdapter pagerAdapter = new CustomPagerAdapter(viewList);
+        viewPager.setAdapter(pagerAdapter);
     }
 
     private void initLogin(View view) {
