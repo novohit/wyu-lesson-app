@@ -28,13 +28,13 @@
             android:id="@+id/data_ipt_tabItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="自动导入" />
+            android:text="登录" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/data_ipt_tabItem2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="手动导入" />
+            android:text="待开发" />
     </com.google.android.material.tabs.TabLayout>
 </com.google.android.material.appbar.AppBarLayout>
 

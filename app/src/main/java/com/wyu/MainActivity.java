@@ -82,13 +82,9 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                WindowManager windowManager = (WindowManager) getSystemService(
-                        getApplicationContext().WINDOW_SERVICE);
+                WindowManager windowManager = (WindowManager) getSystemService(getApplicationContext().WINDOW_SERVICE);
                 Display display = windowManager.getDefaultDisplay();
-                coordinatorLayout.layout(navigationView.getRight(),
-                        0,
-                        display.getWidth() + navigationView.getRight(),
-                        display.getHeight());
+                coordinatorLayout.layout(navigationView.getRight(), 0, display.getWidth() + navigationView.getRight(), display.getHeight());
                 super.onDrawerSlide(drawerView, slideOffset);
             }
 
@@ -152,14 +148,20 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.ic_mark:
-                new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的学期").setSingleChoiceItems(
-                        Constant.SELECTED_TERM_LIST, 0,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                updateCourseGrid(Constant.SELECTED_TERM_LIST[which], ContextHolder.currentWeek);
-                                dialog.dismiss();
-                            }
-                        }).setNegativeButton("取消", null).show();
+                String selectedTerm = courseGridPanelAdapter.getSelectedTerm();
+                int lastIndex = 0;
+                for (int i = 0; i < Constant.SELECTED_TERM_LIST.length; i++) {
+                    if (Constant.SELECTED_TERM_LIST[i].equals(selectedTerm)) {
+                        lastIndex = i;
+                    }
+                }
+
+                new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的学期").setSingleChoiceItems(Constant.SELECTED_TERM_LIST, lastIndex, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateCourseGrid(Constant.SELECTED_TERM_LIST[which], ContextHolder.currentWeek);
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("取消", null).show();
                 break;
             case R.id.ic_settings:
                 ToastUtil.show("TODO");
@@ -186,15 +188,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 1) {
-                    new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的周").setSingleChoiceItems(
-                            Constant.SELECTED_WEEK_LIST, courseGridPanelAdapter.getSelectedWeek() - 1 >= 0 ? courseGridPanelAdapter.getSelectedWeek() - 1 : 0,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    updateCourseGrid(which + 1);
-                                    tabLayout.getTabAt(1).setText("第" + (which + 1) + "周");
-                                    dialog.dismiss();
-                                }
-                            }).setNegativeButton("取消", null).show();
+                    new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的周").setSingleChoiceItems(Constant.SELECTED_WEEK_LIST, courseGridPanelAdapter.getSelectedWeek() - 1 >= 0 ? courseGridPanelAdapter.getSelectedWeek() - 1 : 0, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            updateCourseGrid(which + 1);
+                            tabLayout.getTabAt(1).setText("第" + (which + 1) + "周");
+                            dialog.dismiss();
+                        }
+                    }).setNegativeButton("取消", null).show();
                 }
             }
         });

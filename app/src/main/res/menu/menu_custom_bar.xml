@@ -7,9 +7,12 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/ic_mark"
-        android:icon="@drawable/ic_chrome_reader_mode_white_24dp"
-        android:title="学期"
+        android:title="切换学期"
         app:showAsAction="ifRoom"/>
+<!--
+        android:icon="@drawable/ic_chrome_reader_mode_white_24dp"
+-->
+
     <item
         android:id="@+id/ic_settings"
         android:icon="@drawable/ic_settings_white_24dp"

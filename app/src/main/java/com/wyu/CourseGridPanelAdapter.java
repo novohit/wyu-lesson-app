@@ -65,6 +65,10 @@ public class CourseGridPanelAdapter extends PanelAdapter {
         }
     }
 
+    public String getSelectedTerm() {
+        return selectedTerm;
+    }
+
     private void updateGrid() {
         grid = new Course[Constant.SECTION_LIST.length][Constant.DAY_OF_WEEK_LIST.length];
         for (int i = 0; i < grid.length; i++) {

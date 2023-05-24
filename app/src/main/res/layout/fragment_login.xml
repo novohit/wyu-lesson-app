@@ -75,7 +75,6 @@
             android:drawableLeft="@drawable/password"
             android:drawableStart="@drawable/password"
             android:hint="请输入密码"
-            android:text="zb001222!"
             android:inputType="textPassword"/>
 
     </com.google.android.material.textfield.TextInputLayout>
