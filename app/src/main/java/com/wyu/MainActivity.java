@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivityForResult(intent, 1);
                         break;
                     case R.id.nav_scores:
-                        startActivity(new Intent(MainActivity.this, ScoresListActivity.class));
+                        startActivity(new Intent(MainActivity.this, ScoreListActivity.class));
                         break;
                     case R.id.nav_info:
                         new AlertDialog.Builder(MainActivity.this).setTitle("关于").setMessage("https://github.com/novohit").setPositiveButton("确定", null).show();
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
                 if (state >= 0) {
                     Log.i(MyState.TAG, "onActivityResult");
                     String currentTerm = CommonUtil.getCurrentTerm();
-                    Map<Integer, CourseVO> currentTermData = ContextHolder.data.get(currentTerm);
+                    Map<Integer, CourseVO> currentTermData = ContextHolder.courseData.get(currentTerm);
                     assert currentTermData != null;
                     CourseVO courseVO = currentTermData.get(1);
                     assert courseVO != null;

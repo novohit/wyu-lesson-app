@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.wyu.DataImportActivity" />
-        <activity android:name="com.wyu.ScoresListActivity"></activity>
+        <activity android:name="com.wyu.ScoreListActivity"></activity>
     </application>
 
 </manifest>

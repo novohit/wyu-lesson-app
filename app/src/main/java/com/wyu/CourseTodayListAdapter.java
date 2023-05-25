@@ -28,6 +28,7 @@ public class CourseTodayListAdapter extends RecyclerView.Adapter<CourseTodayList
         TextView section;
         TextView teacher;
         TextView grade;
+        TextView content;
 
         public ViewHolder(View view) {
             super(view);
@@ -37,6 +38,7 @@ public class CourseTodayListAdapter extends RecyclerView.Adapter<CourseTodayList
             section = (TextView) view.findViewById(R.id.today_course_section);
             teacher = (TextView) view.findViewById(R.id.today_course_teacher);
             grade = (TextView) view.findViewById(R.id.today_course_grader);
+            content = (TextView) view.findViewById(R.id.today_course_content);
         }
     }
 
@@ -47,7 +49,7 @@ public class CourseTodayListAdapter extends RecyclerView.Adapter<CourseTodayList
     public void updateList() {
         String currentTerm = ContextHolder.currentTerm;
         int currentWeek = ContextHolder.currentWeek;
-        Map<Integer, CourseVO> currentTermCourse = ContextHolder.data.get(currentTerm);
+        Map<Integer, CourseVO> currentTermCourse = ContextHolder.courseData.get(currentTerm);
         todayCourseList = new ArrayList<>();
         if (currentTermCourse != null) {
             CourseVO courseVO = currentTermCourse.get(currentWeek);
@@ -75,6 +77,11 @@ public class CourseTodayListAdapter extends RecyclerView.Adapter<CourseTodayList
         Course course = todayCourseList.get(position);
         holder.courseName.setText(course.getName());
         holder.grade.setText(course.getGrade());
+        String content = course.getContent();
+        if (content.length() > 20) {
+            content = content.substring(0, 20) + "...";
+        }
+        holder.content.setText(content);
         holder.teacher.setText(course.getTeacher());
         holder.location.setText(course.getLocation());
         holder.week.setText(course.getWeek() + "周");

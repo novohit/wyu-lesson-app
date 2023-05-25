@@ -13,7 +13,7 @@ import com.google.gson.GsonBuilder;
 
 import com.wyu.data.Course;
 import com.wyu.data.CourseList;
-import com.wyu.config.Form;
+import com.wyu.config.RequestInfo;
 import com.wyu.config.MyState;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
@@ -34,10 +34,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CourseTableModule extends Form {
+public class CourseModule extends RequestInfo {
     private Handler handler;
 
-    public CourseTableModule(Handler handler) {
+    public CourseModule(Handler handler) {
         this.handler = handler;
     }
 
@@ -82,10 +82,10 @@ public class CourseTableModule extends Form {
 
                     CourseVO courseVO = new Gson().fromJson(resp.getData(), new TypeToken<CourseVO>() {
                     }.getType());
-                    Map<Integer, CourseVO> map = ContextHolder.data.get(term);
+                    Map<Integer, CourseVO> map = ContextHolder.courseData.get(term);
                     if (map == null) {
                         map = new HashMap<>();
-                        ContextHolder.data.put(term, map);
+                        ContextHolder.courseData.put(term, map);
                     }
                     map.put(week, courseVO);
                     Log.i("coursevo ", String.valueOf(courseVO.getCourseCount()));
@@ -107,7 +107,7 @@ public class CourseTableModule extends Form {
 //                    }
                 }
             }
-        }.get(url, Form.cookies);
+        }.get(url, RequestInfo.cookies);
     }
 
     public CourseList storeCourseList(String html, String xh, String path) {

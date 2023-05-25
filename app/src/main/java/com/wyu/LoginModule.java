@@ -7,7 +7,7 @@ import android.os.Message;
 import android.util.Base64;
 import android.util.Log;
 
-import com.wyu.config.Form;
+import com.wyu.config.RequestInfo;
 import com.wyu.config.MyState;
 import com.wyu.util.BizCodeEnum;
 import com.wyu.util.Resp;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LoginModule extends Form {
+public class LoginModule extends RequestInfo {
     private Handler handler;
 
     public void setHandler(Handler handler) {
@@ -102,9 +102,9 @@ public class LoginModule extends Form {
                     Resp resp = CommonUtil.getResp(response);
                     Log.i("resp", resp.toString());
                     if (BizCodeEnum.SUCCESS.getCode().equals(resp.getCode())) {
-                        Form.captcha = verifyCode;
-                        Form.account = userNumber;
-                        Form.password = password;
+                        RequestInfo.captcha = verifyCode;
+                        RequestInfo.account = userNumber;
+                        RequestInfo.password = password;
                         Log.i(MyState.TAG, "登陆成功~~~");
                         Message msg = new Message();
                         msg.what = MyState.LOGIN_SUCCESSFUL;

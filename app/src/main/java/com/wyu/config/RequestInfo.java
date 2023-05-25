@@ -1,7 +1,7 @@
 package com.wyu.config;
 
 
-public class Form {
+public class RequestInfo {
     protected static final  String personType = "0";
     protected static String account;
     protected static String password;
@@ -14,7 +14,7 @@ public class Form {
 
     protected final static String personTableBaseURL = DOMAIN + "/kdjw/tkglAction.do?method=goListKbByXs";
     protected final static String URL_COURSE = DOMAIN + "/user/courses";
-    protected final static String scoresListBaseURL = DOMAIN + "/kdjw/xszqcjglAction.do?method=queryxscj";
+    protected final static String URL_SCORE = DOMAIN + "/user/score";
     protected final static String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko";
 
     protected static StringBuilder cookies = new StringBuilder();       //save cookies

@@ -20,7 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.wyu.config.ContextHolder;
-import com.wyu.config.Form;
+import com.wyu.config.RequestInfo;
 import com.wyu.config.MyState;
 import com.wyu.data.*;
 import com.wyu.util.CommonUtil;
@@ -30,7 +30,6 @@ import com.wyu.util.ToastUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -51,8 +50,8 @@ public class DataImportActivity extends AppCompatActivity {
     private TextInputEditText loginVerifyCode;
 
     LoginModule loginModule;
-    CourseTableModule courseTableModule;
-    ScoresListModule scoresListModule;
+    CourseModule courseModule;
+    ScoreModule scoreModule;
     @SuppressLint("HandlerLeak")
     public Handler handler = new Handler() {
         boolean beginCount = false;
@@ -90,8 +89,8 @@ public class DataImportActivity extends AppCompatActivity {
                     Log.i(MyState.TAG, "获取失败！");
                     break;
                 case MyState.LOGIN_SUCCESSFUL:
-                    if (!Form.getAccount().equals(ContextHolder.userNumber)) {
-                        ContextHolder.resetUserInfo(Form.getAccount());
+                    if (!RequestInfo.getAccount().equals(ContextHolder.userNumber)) {
+                        ContextHolder.resetUserInfo(RequestInfo.getAccount());
                     }
                     ContextHolder.firstYear = spStartYear.getSelectedItem().toString();
 
@@ -101,13 +100,13 @@ public class DataImportActivity extends AppCompatActivity {
                     String currentTerm = CommonUtil.getCurrentTerm();
 
                     long start = System.currentTimeMillis();
-                    courseTableModule.getCourseList(currentTerm);
-                    getOtherTermCourses(currentTerm);
-                    while (ContextHolder.data.get(currentTerm) == null || ContextHolder.data.get(currentTerm).size() != 20) {
+                    courseModule.getCourseList(currentTerm);
+                    scoreModule.getScoresList(currentTerm);
+                    getOtherTermCoursesAndScore(currentTerm);
+                    while (ContextHolder.courseData.get(currentTerm) == null || ContextHolder.courseData.get(currentTerm).size() != 20) {
 
                     }
                     Log.i(MyState.TAG, "耗时：" + (System.currentTimeMillis() - start) + "ms");
-                    scoresListModule.getScoresList(currentTerm);
                     Log.i(MyState.TAG, "正在获取学期：" + currentTerm);
                     break;
                 case MyState.SUCCESS:
@@ -160,8 +159,8 @@ public class DataImportActivity extends AppCompatActivity {
         }
     };
 
-    private void getOtherTermCourses(String defaultTerm) {
-        ExecutorService pool = Executors.newFixedThreadPool(5, new ThreadFactory() {
+    private void getOtherTermCoursesAndScore(String defaultTerm) {
+        ExecutorService pool = Executors.newFixedThreadPool(4, new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(1);
 
             @Override
@@ -179,7 +178,8 @@ public class DataImportActivity extends AppCompatActivity {
             if (!term.equals(defaultTerm)) {
                 pool.execute(() -> {
                     Log.i(MyState.TAG, "正在查询" + term + "的课表");
-                    courseTableModule.getCourseList(term);
+                    courseModule.getCourseList(term);
+                    scoreModule.getScoresList(term);
                 });
             }
         }
@@ -220,8 +220,8 @@ public class DataImportActivity extends AppCompatActivity {
 
     private void initGetInfoModule() {
         loginModule = new LoginModule(handler);
-        courseTableModule = new CourseTableModule(handler);
-        scoresListModule = new ScoresListModule(handler);
+        courseModule = new CourseModule(handler);
+        scoreModule = new ScoreModule(handler);
     }
 
     //Tab和PageView关联
@@ -296,7 +296,7 @@ public class DataImportActivity extends AppCompatActivity {
         if ((!"".equals(userName)) && (!"".equals(password)) && (!"".equals(verifyCode))) {
             ToastUtil.show("正在获取");
             loginModule.studentSubmit(userName, password, verifyCode);
-            Log.i(MyState.TAG, userName + " " + password + " " + verifyCode + " " + Form.getCookies());
+            Log.i(MyState.TAG, userName + " " + password + " " + verifyCode + " " + RequestInfo.getCookies());
         } else {
             ToastUtil.show("请将信息输入完整");
         }

@@ -17,11 +17,14 @@ import com.wyu.data.CourseList;
 import com.wyu.data.DataConf;
 import com.wyu.data.ScoresList;
 import com.wyu.model.CourseVO;
+import com.wyu.model.ScoreVO;
 import com.wyu.util.CommonUtil;
 import com.wyu.util.MyApplication;
 
 public class ContextHolder {
-    public static Map<String, Map<Integer, CourseVO>> data;
+    public static Map<String, Map<Integer, CourseVO>> courseData;
+
+    public static Map<String, ScoreVO> scoreData;
 
     public static String currentTerm; // 当前学期
     public static int currentWeek; // 当前学期第几周
@@ -57,7 +60,8 @@ public class ContextHolder {
 
 
     static {
-        data = new HashMap<>();
+        courseData = new HashMap<>();
+        scoreData = new HashMap<>();
         currentTerm = CommonUtil.getCurrentTerm();
         currentWeek = 1;
         dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;

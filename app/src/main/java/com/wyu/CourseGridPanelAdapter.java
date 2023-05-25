@@ -1,6 +1,7 @@
 package com.wyu;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,22 +16,19 @@ import com.wyu.util.Constant;
 import com.wyu.util.MyApplication;
 import com.kelin.scrollablepanel.library.PanelAdapter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CourseGridPanelAdapter extends PanelAdapter {
 
-    private int selectedWeek; //当前周
+    private int selectedWeek;
 
     private String selectedTerm;
 
     private Map<Integer, CourseVO> selectedTermCourses;
 
 
-    private static final int FIRST_WIDTH = ContextHolder.dip2px(MyApplication.getContext(), 18);
-    private static final int FIRST_HEIGHT = ContextHolder.dip2px(MyApplication.getContext(), 20);
+    private static final int FIRST_WIDTH = ContextHolder.dip2px(MyApplication.getContext(), 25);
+    private static final int FIRST_HEIGHT = ContextHolder.dip2px(MyApplication.getContext(), 40);
     private static final int NORMAL_HEIGHT = ContextHolder.dip2px(MyApplication.getContext(), 110);
     private static final int NORMAL_WIDTH = (ContextHolder.screenWidth - FIRST_WIDTH) / 7;
 
@@ -44,7 +42,7 @@ public class CourseGridPanelAdapter extends PanelAdapter {
     private Course[][] grid = new Course[Constant.SECTION_LIST.length][Constant.DAY_OF_WEEK_LIST.length];
 
     public void setSelectedWeek(int selectedWeek) {
-        selectedTermCourses = ContextHolder.data.get(selectedTerm);
+        selectedTermCourses = ContextHolder.courseData.get(selectedTerm);
         this.selectedWeek = selectedWeek;
         if (selectedTermCourses != null) {
             Log.i("week", "切换为第" + selectedWeek + "周");
@@ -57,7 +55,7 @@ public class CourseGridPanelAdapter extends PanelAdapter {
     }
 
     public void setSelectedTerm(String selectedTerm) {
-        selectedTermCourses = ContextHolder.data.get(selectedTerm);
+        selectedTermCourses = ContextHolder.courseData.get(selectedTerm);
         this.selectedTerm = selectedTerm;
         if (selectedTermCourses != null) {
             Log.i("week", "切换为第" + selectedTerm + "学期");
@@ -93,11 +91,11 @@ public class CourseGridPanelAdapter extends PanelAdapter {
     public CourseGridPanelAdapter(String selectedTerm, int selectedWeek) {
         this.selectedWeek = selectedWeek;
         this.selectedTerm = selectedTerm;
-        if (selectedTerm == null || ContextHolder.data == null || ContextHolder.data.get(selectedTerm) == null) {
+        if (selectedTerm == null || ContextHolder.courseData == null || ContextHolder.courseData.get(selectedTerm) == null) {
             selectedTermCourses = new HashMap<>();
-            ContextHolder.data.put(selectedTerm, selectedTermCourses);
+            ContextHolder.courseData.put(selectedTerm, selectedTermCourses);
         } else {
-            selectedTermCourses = ContextHolder.data.get(selectedTerm);
+            selectedTermCourses = ContextHolder.courseData.get(selectedTerm);
         }
         updateGrid();
     }
@@ -150,13 +148,21 @@ public class CourseGridPanelAdapter extends PanelAdapter {
             titleViewHolder.params.width = FIRST_WIDTH;
             titleViewHolder.params.height = FIRST_HEIGHT;
             titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);
-            titleViewHolder.titleTextView.setText("");
+            titleViewHolder.titleTextView.setText(Calendar.getInstance().get(Calendar.MONTH) + 1 + "月");
         } else if (row == 0) {
             titleViewHolder.params.width = NORMAL_WIDTH;
             titleViewHolder.params.height = FIRST_HEIGHT;
             titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);
             titleViewHolder.titleCardView.setMinimumWidth(50);
-            titleViewHolder.titleTextView.setText(Constant.DAY_OF_WEEK_LIST[column]);
+            String date = "";
+            CourseVO courseVO = selectedTermCourses.get(selectedWeek);
+            if (courseVO != null) {
+                Map<String, String> dateMap = courseVO.getDate();
+                date = dateMap.get(String.valueOf(column));
+                date = date.substring(5);
+            }
+            titleViewHolder.titleTextView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+            titleViewHolder.titleTextView.setText(Constant.DAY_OF_WEEK_LIST[column] + "\n" + date);
         } else if (column == 0) {
             titleViewHolder.params.width = FIRST_WIDTH;
             titleViewHolder.params.height = NORMAL_HEIGHT;
@@ -175,12 +181,6 @@ public class CourseGridPanelAdapter extends PanelAdapter {
                     //throw new RuntimeException(e);
                 }
                 titleViewHolder.titleCardView.setCardBackgroundColor(MyApplication.getContext().getResources().getColor(COLORS[id % COLORS.length]));
-
-//                if (courseCards.get(loc).zhou[currentWeek]) {
-//                    titleViewHolder.titleCardView.setCardBackgroundColor(MyApplication.getContext().getResources().getColor(colors[courseCards.get(loc).no % 20]));
-//                } else {
-//                    titleViewHolder.titleCardView.setCardBackgroundColor(MyApplication.getContext().getResources().getColor(R.color.silver));
-//                }
                 titleViewHolder.titleTextView.setText(course.getName() + "\n@" + course.getLocation());
             } else {
                 // 无课
