@@ -1,4 +1,4 @@
-package com.wyu;
+package com.wyu.activity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -9,12 +9,12 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.wyu.config.ContextHolder;
+import com.wyu.R;
+import com.wyu.adapter.ScoreListAdapter;
 import com.wyu.util.CommonUtil;
-import com.wyu.util.Constant;
+import com.wyu.constant.Constant;
 import com.wyu.util.ToastUtil;
 
 public class ScoreListActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package com.wyu;
+package com.wyu.adapter;
 
 import android.util.Log;
 import android.view.Gravity;
@@ -9,10 +9,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import com.wyu.R;
 import com.wyu.model.Course;
 import com.wyu.model.CourseVO;
 import com.wyu.config.ContextHolder;
-import com.wyu.util.Constant;
+import com.wyu.constant.Constant;
 import com.wyu.util.MyApplication;
 import com.kelin.scrollablepanel.library.PanelAdapter;
 
@@ -91,11 +92,12 @@ public class CourseGridPanelAdapter extends PanelAdapter {
     public CourseGridPanelAdapter(String selectedTerm, int selectedWeek) {
         this.selectedWeek = selectedWeek;
         this.selectedTerm = selectedTerm;
-        if (selectedTerm == null || ContextHolder.courseData == null || ContextHolder.courseData.get(selectedTerm) == null) {
+        // 初始化时 如果conf文件有 说明有缓存
+        if (ContextHolder.courseData.get(selectedTerm) != null) {
+            selectedTermCourses = ContextHolder.courseData.get(selectedTerm);
+        } else {
             selectedTermCourses = new HashMap<>();
             ContextHolder.courseData.put(selectedTerm, selectedTermCourses);
-        } else {
-            selectedTermCourses = ContextHolder.courseData.get(selectedTerm);
         }
         updateGrid();
     }
@@ -155,11 +157,13 @@ public class CourseGridPanelAdapter extends PanelAdapter {
             titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);
             titleViewHolder.titleCardView.setMinimumWidth(50);
             String date = "";
-            CourseVO courseVO = selectedTermCourses.get(selectedWeek);
-            if (courseVO != null) {
-                Map<String, String> dateMap = courseVO.getDate();
-                date = dateMap.get(String.valueOf(column));
-                date = date.substring(5);
+            if (selectedTermCourses != null) {
+                CourseVO courseVO = selectedTermCourses.get(selectedWeek);
+                if (courseVO != null) {
+                    Map<String, String> dateMap = courseVO.getDate();
+                    date = dateMap.get(String.valueOf(column));
+                    date = date.substring(5);
+                }
             }
             titleViewHolder.titleTextView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
             titleViewHolder.titleTextView.setText(Constant.DAY_OF_WEEK_LIST[column] + "\n" + date);

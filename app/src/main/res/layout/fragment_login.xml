@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    tools:context="com.wyu.DataImportActivity">
+    tools:context="com.wyu.activity.LoginActivity">
 
 <LinearLayout
     android:orientation="vertical"
@@ -21,24 +21,6 @@
         android:padding="20dp"
         android:adjustViewBounds="true"
         android:src="@drawable/wyu_back"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:layout_marginBottom="5dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="请选择入学年份"/>
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/sp_start_year"
-            android:layout_width="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_height="wrap_content"
-            android:spinnerMode="dropdown">
-
-        </androidx.appcompat.widget.AppCompatSpinner>
-    </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -110,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:onClick="refreshVerifyCode"
+            android:onClick="refreshCaptcha"
             android:layout_gravity="center_vertical"
             android:text="刷新"/>
 

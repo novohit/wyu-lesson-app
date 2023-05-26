@@ -5,7 +5,7 @@
     android:id="@+id/course_list_recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wyu.MainActivity" >
+    tools:context="com.wyu.activity.MainActivity" >
 
 
 </androidx.recyclerview.widget.RecyclerView>

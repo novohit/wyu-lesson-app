@@ -1,4 +1,4 @@
-package com.wyu;
+package com.wyu.adapter;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -6,11 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
+import com.wyu.R;
 import com.wyu.config.ContextHolder;
-import com.wyu.config.MyState;
+import com.wyu.constant.MyState;
 import com.wyu.model.Course;
 import com.wyu.model.CourseVO;
-import com.wyu.util.Constant;
+import com.wyu.constant.Constant;
 
 import java.util.ArrayList;
 import java.util.List;

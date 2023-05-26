@@ -1,4 +1,4 @@
-package com.wyu;
+package com.wyu.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,12 +23,16 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.kelin.scrollablepanel.library.ScrollablePanel;
+import com.wyu.*;
+import com.wyu.adapter.CourseGridPanelAdapter;
+import com.wyu.adapter.CourseTodayListAdapter;
+import com.wyu.adapter.CustomPagerAdapter;
 import com.wyu.config.ContextHolder;
-import com.wyu.config.MyState;
+import com.wyu.constant.MyState;
 import com.wyu.model.CourseVO;
 import com.wyu.util.CommonUtil;
-import com.wyu.util.Constant;
-import com.wyu.util.MyFileHelper;
+import com.wyu.constant.Constant;
+import com.wyu.util.FileUtil;
 import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -59,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.i(MyState.TAG, "主界面创建");
-        MyFileHelper.getInfo();
+        FileUtil.getInfo();
         toolbar = (Toolbar) findViewById(R.id.custom_toolbar);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_cl);
         tabLayout = (TabLayout) findViewById(R.id.main_tab);
@@ -70,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
         initView();
         relateTabAndViewPager();
         initViewPager();
-        if (ContextHolder.myCourseTableList != null) {
-//            updateCourseGrid(EnvironmentPool.currentWeek, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
-//            updateCourseList(EnvironmentPool.currentWeek, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
-        }
+//        if (ContextHolder.myCourseTableList != null) {
+////            updateCourseGrid(EnvironmentPool.currentWeek, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
+////            updateCourseList(EnvironmentPool.currentWeek, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
+//        }
 
     }
 
@@ -102,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.nav_import:
-                        Intent intent = new Intent(MainActivity.this, DataImportActivity.class);
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivityForResult(intent, 1);
                         break;
                     case R.id.nav_scores:
@@ -295,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        MyFileHelper.saveInfo();
+        FileUtil.saveInfo();
         super.onDestroy();
     }
 }

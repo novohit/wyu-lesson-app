@@ -1,24 +1,22 @@
-package com.wyu;
+package com.wyu.adapter;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import com.wyu.R;
 import com.wyu.config.ContextHolder;
-import com.wyu.config.MyState;
-import com.wyu.data.Subject;
+import com.wyu.constant.MyState;
 import com.wyu.model.Score;
 import com.wyu.model.ScoreVO;
 import com.wyu.util.MyApplication;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class ScoreListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public boolean isInteger(String str) {

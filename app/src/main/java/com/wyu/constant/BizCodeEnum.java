@@ -1,4 +1,4 @@
-package com.wyu.util;
+package com.wyu.constant;
 
 /**
  * @author novo

@@ -1,4 +1,4 @@
-package com.wyu.config;
+package com.wyu.constant;
 
 public class MyState {
     public static final int SUCCESS = 1;

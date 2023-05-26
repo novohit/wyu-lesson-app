@@ -1,4 +1,4 @@
-package com.wyu;
+package com.wyu.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -9,49 +9,47 @@ import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
+import com.wyu.*;
+import com.wyu.adapter.CustomPagerAdapter;
 import com.wyu.config.ContextHolder;
-import com.wyu.config.RequestInfo;
-import com.wyu.config.MyState;
-import com.wyu.data.*;
+import com.wyu.constant.RequestInfo;
+import com.wyu.constant.MyState;
+import com.wyu.request.CourseModule;
+import com.wyu.request.LoginModule;
+import com.wyu.request.ScoreModule;
 import com.wyu.util.CommonUtil;
-import com.wyu.util.Constant;
+import com.wyu.constant.Constant;
 import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DataImportActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
-    private AppCompatSpinner spStartYear;
-    private List<String> stYearList;
 
-
-    private ImageView loginIVerify;
-    private TextInputEditText loginUserNumber;
-    private TextInputEditText loginPassword;
-    private TextInputEditText loginVerifyCode;
+    private ImageView captchaImg;
+    private TextInputEditText studentNumber;
+    private TextInputEditText password;
+    private TextInputEditText captcha;
 
     LoginModule loginModule;
     CourseModule courseModule;
     ScoreModule scoreModule;
+
     @SuppressLint("HandlerLeak")
     public Handler handler = new Handler() {
         boolean beginCount = false;
@@ -63,11 +61,11 @@ public class DataImportActivity extends AppCompatActivity {
             switch (msg.what) {
                 case MyState.GET_VERIFYCODE_SUCCESSFUL:
                     Bitmap bitmap = (Bitmap) msg.obj;
-                    loginIVerify.setImageBitmap(bitmap);
+                    captchaImg.setImageBitmap(bitmap);
                     break;
                 case MyState.LOGIN_FAILED:
                     ToastUtil.show("登录失败,检查学号、密码、验证码是否正确");
-                    loginModule.getVerifyCodeImage();
+                    loginModule.getCaptcha();
                     break;
                 case MyState.CONNECTION_ERROR:
                     ToastUtil.show("网络开小差了~");
@@ -89,11 +87,6 @@ public class DataImportActivity extends AppCompatActivity {
                     Log.i(MyState.TAG, "获取失败！");
                     break;
                 case MyState.LOGIN_SUCCESSFUL:
-                    if (!RequestInfo.getAccount().equals(ContextHolder.userNumber)) {
-                        ContextHolder.resetUserInfo(RequestInfo.getAccount());
-                    }
-                    ContextHolder.firstYear = spStartYear.getSelectedItem().toString();
-
                     beginCount = true;
                     cnt = suc = 0;
 
@@ -111,28 +104,6 @@ public class DataImportActivity extends AppCompatActivity {
                     break;
                 case MyState.SUCCESS:
                     suc++;
-                    String kind = msg.getData().getString("kind");
-                    DataConf dataConf = (DataConf) msg.getData().getSerializable("dataConf");
-                    if ("courseTable".equals(kind)) {
-                        if (!ContextHolder.myCourseTableList.contains(dataConf.xq)) {
-                            ContextHolder.myCourseTableList.add(dataConf.xq);
-                            ContextHolder.courseConf.add(dataConf);
-                        }
-                        CourseList courseList = (CourseList) msg.getData().getSerializable("data");
-                        ContextHolder.allCourse.put(dataConf.xq, courseList);
-                        List<CourseCard> courseCards = CourseTableDivide.courseTableDivide(courseList.getTable());
-                        ContextHolder.courseCards.put(dataConf.xq, courseCards);
-                        Log.i(MyState.TAG, "nnn课程数" + ContextHolder.myCourseTableList.size());
-                    } else if ("scoresList".equals(kind)) {
-                        if (!ContextHolder.myScoresListsList.contains(dataConf.xq)) {
-                            ContextHolder.myScoresListsList.add(dataConf.xq);
-                            ContextHolder.scoresConf.add(dataConf);
-                        }
-                        ScoresList scoresList = (ScoresList) msg.getData().getSerializable("data");
-                        ContextHolder.allScores.put(dataConf.xq, scoresList);
-                    }
-                    ToastUtil.show("获取成功!文件：" + dataConf.path);
-                    Log.i(MyState.TAG, "获取成功!文件：" + dataConf.path);
                     break;
                 default:
             }
@@ -141,11 +112,6 @@ public class DataImportActivity extends AppCompatActivity {
                 if (cnt >= sum + 1) {
                     beginCount = false;
                     sum = cnt = 0;
-                    Log.i(MyState.TAG, "zzz课程数" + ContextHolder.myCourseTableList.size());
-                    Collections.sort(ContextHolder.myCourseTableList);
-                    Collections.sort(ContextHolder.myScoresListsList);
-                    ContextHolder.curSemPos = ContextHolder.myCourseTableList.size() - 1;
-                    Log.i(MyState.TAG, "当前学期" + ContextHolder.curSemPos);
                     ToastUtil.show("获取完成,共" + sum + "个,成功" + suc + "个");
                     Log.i(MyState.TAG, "接收完成");
                     //写入配置文件
@@ -185,7 +151,7 @@ public class DataImportActivity extends AppCompatActivity {
         }
     }
 
-    public DataImportActivity() {
+    public LoginActivity() {
     }
 
     @Override
@@ -202,9 +168,7 @@ public class DataImportActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            //actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         }
-        // 登录相关
         initGetInfoModule();
         initViewPager();
         relateTabAndViewPager();
@@ -224,13 +188,13 @@ public class DataImportActivity extends AppCompatActivity {
         scoreModule = new ScoreModule(handler);
     }
 
-    //Tab和PageView关联
+
     private void relateTabAndViewPager() {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
     }
 
-    //ViewPager相关
+
     private void initViewPager() {
         LayoutInflater inflater = getLayoutInflater();
         View view1 = inflater.inflate(R.layout.fragment_login, null);
@@ -245,54 +209,20 @@ public class DataImportActivity extends AppCompatActivity {
 
     private void initLogin(View view) {
 
-        loginIVerify = (ImageView) view.findViewById(R.id.iv_verify_code);  //注意要用view.findViewById()
-        loginUserNumber = (TextInputEditText) view.findViewById(R.id.et_user_number);
-        loginPassword = (TextInputEditText) view.findViewById(R.id.et_password);
-        loginVerifyCode = (TextInputEditText) view.findViewById(R.id.et_verify_code);
-        spStartYear = (AppCompatSpinner) view.findViewById(R.id.sp_start_year);
-
-        if (loginUserNumber.getText().length() == 0) {
-            loginUserNumber.setText(ContextHolder.userNumber);
-        }
-        stYearList = new ArrayList<>();
-/*        for(int i = 0; i <= 7; ++i){
-            stYearList.add(String.valueOf(EnvironmentPool.currentYear-6+i));
-        }*/
-        stYearList.add("202201");
-        stYearList.add("202202");
-
-        //---------------------------------spinner用法
-        ArrayAdapter<String> stYearAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, stYearList);
-        stYearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spStartYear.setAdapter(stYearAdapter);
-        if (ContextHolder.firstYear.length() == 4) {
-            ContextHolder.firstYearPos = stYearList.indexOf(ContextHolder.firstYear);
-            spStartYear.setSelection(ContextHolder.firstYearPos);
-        }
-        //Log.i(MyState.TAG,spStartYear.getPrompt().toString());
-        spStartYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //选择列表项的操作
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                //未选中时候的操作
-            }
-        });
-        loginModule.getVerifyCodeImage();
+        captchaImg = (ImageView) view.findViewById(R.id.iv_verify_code);  //注意要用view.findViewById()
+        studentNumber = (TextInputEditText) view.findViewById(R.id.et_user_number);
+        password = (TextInputEditText) view.findViewById(R.id.et_password);
+        captcha = (TextInputEditText) view.findViewById(R.id.et_verify_code);
+        loginModule.getCaptcha();
 
     }
 
-    //=============================================================================================
-    //Login相关
+
     public void onClickLogin(View view) {
 
-        String userName = loginUserNumber.getText().toString().trim();
-        String password = loginPassword.getText().toString().trim();
-        String verifyCode = loginVerifyCode.getText().toString().trim();
+        String userName = studentNumber.getText().toString().trim();
+        String password = this.password.getText().toString().trim();
+        String verifyCode = captcha.getText().toString().trim();
         if ((!"".equals(userName)) && (!"".equals(password)) && (!"".equals(verifyCode))) {
             ToastUtil.show("正在获取");
             loginModule.studentSubmit(userName, password, verifyCode);
@@ -303,8 +233,8 @@ public class DataImportActivity extends AppCompatActivity {
 
     }
 
-    public void refreshVerifyCode(View view) {
+    public void refreshCaptcha(View view) {
         //ToastUtil.show("获取验证码");
-        loginModule.getVerifyCodeImage();
+        loginModule.getCaptcha();
     }
 }

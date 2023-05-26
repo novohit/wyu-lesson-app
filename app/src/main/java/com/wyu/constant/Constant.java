@@ -1,4 +1,4 @@
-package com.wyu.util;
+package com.wyu.constant;
 
 import java.util.ArrayList;
 import java.util.Arrays;

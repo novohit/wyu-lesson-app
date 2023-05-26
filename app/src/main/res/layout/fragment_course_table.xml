@@ -6,7 +6,7 @@
     android:id="@+id/scrollable_panel"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    tools:context="com.wyu.MainActivity">
+    tools:context="com.wyu.activity.MainActivity">
 
 
 </com.kelin.scrollablepanel.library.ScrollablePanel>

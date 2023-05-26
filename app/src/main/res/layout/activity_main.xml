@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:id="@+id/main_cl"
         android:fitsSystemWindows="true"
-        tools:context="com.wyu.MainActivity">
+        tools:context="com.wyu.activity.MainActivity">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/main_appBarLayout"

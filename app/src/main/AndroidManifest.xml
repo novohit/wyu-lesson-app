@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config">
-        <activity android:name="com.wyu.MainActivity"
+        <activity android:name="com.wyu.activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -22,8 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.wyu.DataImportActivity" />
-        <activity android:name="com.wyu.ScoreListActivity"></activity>
+        <activity android:name="com.wyu.activity.LoginActivity" />
+        <activity android:name="com.wyu.activity.ScoreListActivity"></activity>
     </application>
 
 </manifest>
