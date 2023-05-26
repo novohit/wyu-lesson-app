@@ -70,8 +70,12 @@ public class FileUtil {
         String scoreDataStr = sharedPreferences.getString("scoreData", "");
         String currentWeek = sharedPreferences.getString("currentWeek", "1");
 
-        ContextHolder.courseData = gson.fromJson(courseDataStr, new TypeToken<Map<String, Map<Integer, CourseVO>>>(){}.getType());
-        ContextHolder.scoreData = gson.fromJson(scoreDataStr, new TypeToken<Map<String, ScoreVO>>() {}.getType());
+        if (!"".equals(courseDataStr)) {
+            ContextHolder.courseData = gson.fromJson(courseDataStr, new TypeToken<Map<String, Map<Integer, CourseVO>>>(){}.getType());
+        }
+        if (!"".equals(scoreDataStr)) {
+            ContextHolder.scoreData = gson.fromJson(scoreDataStr, new TypeToken<Map<String, ScoreVO>>() {}.getType());
+        }
         ContextHolder.currentWeek = Integer.parseInt(currentWeek);
     }
 }

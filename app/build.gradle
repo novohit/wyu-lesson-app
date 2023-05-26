@@ -9,11 +9,11 @@ android {
             storePassword '324890'
         }
     }
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.wyu"
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion 20
+        targetSdkVersion 30
         versionCode 1
         versionName "0.0.3"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
