@@ -233,20 +233,6 @@ public class MainActivity extends AppCompatActivity {
         scrollablePanel.setPanelAdapter(courseGridPanelAdapter);
     }
 
-//    public void updateCourseList(int week) {
-//        courseTodayListAdapter.setCurrentWeek(week);
-//        courseTodayListAdapter.notifyDataSetChanged();
-//    }
-//
-//    public void updateCourseList(String term) {
-//        courseTodayListAdapter.setTerm(term);
-//    }
-//
-//    public void updateCourseList(String term, int week) {
-//        courseTodayListAdapter.setCurrentWeek(week);
-//        courseTodayListAdapter.setTerm(term);
-//        courseTodayListAdapter.notifyDataSetChanged();
-//    }
 
     public void updateCourseGrid(int week) {
         courseGridPanelAdapter.setSelectedWeek(week);
@@ -298,8 +284,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
+        // TODO 设置一个flag 不用每次都保存
         FileUtil.saveInfo();
-        super.onDestroy();
+        super.onStop();
     }
+
+    /**
+     * 现在全屏手机退出后台后不一定会执行onDestroy 跟手机厂商有关
+     */
+//    @Override
+//    protected void onDestroy() {
+//        FileUtil.saveInfo();
+//        super.onDestroy();
+//    }
 }
