@@ -33,9 +33,9 @@ public class CourseGridPanelAdapter extends PanelAdapter {
     private static final int NORMAL_HEIGHT = ContextHolder.dip2px(MyApplication.getContext(), 110);
     private static final int NORMAL_WIDTH = (ContextHolder.screenWidth - FIRST_WIDTH) / 7;
 
-    private static final int[] COLORS = new int[]{R.color.cadetblue, R.color.fuchsia, R.color.orange, R.color.brown
+    private static final int[] COLORS = new int[]{R.color.cadetblue, R.color.fuchsia, R.color.orange
             , R.color.purple, R.color.plum, R.color.green, R.color.limegreen
-            , R.color.slateblue, R.color.aliceblue, R.color.blanchedalmond, R.color.firebrick
+            , R.color.slateblue, R.color.aliceblue, R.color.blanchedalmond
             , R.color.lime, R.color.yellow, R.color.wheat, R.color.khaki
             , R.color.mistyrose, R.color.chartreuse, R.color.aqua, R.color.palevioletred};
 
@@ -83,7 +83,15 @@ public class CourseGridPanelAdapter extends PanelAdapter {
                 String section = course.getSection();
                 List<Integer> rows = getRow(section);
                 for (Integer row : rows) {
-                    grid[row][Integer.parseInt(course.getDayOfWeek())] = course;
+                    // 有人的课程可能会有冲突
+                    Course last = grid[row][Integer.parseInt(course.getDayOfWeek())];
+                    if (last != null) {
+                        last.setName(last.getName() + "\n" + course.getName());
+                        //last.setLocation(last.getLocation() + "\n" + course.getLocation());
+                        last.conflict = true;
+                    } else {
+                        grid[row][Integer.parseInt(course.getDayOfWeek())] = course;
+                    }
                 }
             }
         }
@@ -184,6 +192,9 @@ public class CourseGridPanelAdapter extends PanelAdapter {
                 } catch (NumberFormatException e) {
                     //throw new RuntimeException(e);
                 }
+                if (course.conflict) {
+                    titleViewHolder.titleLinearlayout.setBackgroundColor(MyApplication.getContext().getResources().getColor(R.color.tomato));
+                }
                 titleViewHolder.titleCardView.setCardBackgroundColor(MyApplication.getContext().getResources().getColor(COLORS[id % COLORS.length]));
                 titleViewHolder.titleTextView.setText(course.getName() + "\n@" + course.getLocation());
             } else {
@@ -196,7 +207,6 @@ public class CourseGridPanelAdapter extends PanelAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         return new CourseGridPanelAdapter.TitleViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_course_cell, parent, false));
     }

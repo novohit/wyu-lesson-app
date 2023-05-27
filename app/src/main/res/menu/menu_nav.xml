@@ -8,12 +8,12 @@
         <item
             android:id="@+id/nav_scores"
             android:icon="@drawable/ic_format_list_numbered_black_24dp"
-            android:title="成绩查看"/>
+            android:title="成绩"/>
 
         <item
                 android:id="@+id/nav_chat"
                 android:icon="@drawable/ic_format_list_numbered_black_24dp"
-                android:title="Chat"/>
+                android:title="WYUGPT"/>
 
         <item
             android:id="@+id/nav_info"

@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
                 new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的学期").setSingleChoiceItems(Constant.SELECTED_TERM_LIST, lastIndex, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        updateCourseGrid(Constant.SELECTED_TERM_LIST[which], ContextHolder.currentWeek);
+                        updateCourseGrid(Constant.SELECTED_TERM_LIST[which], courseGridPanelAdapter.getSelectedWeek());
                         dialog.dismiss();
                     }
                 }).setNegativeButton("取消", null).show();
@@ -248,10 +248,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateCourseGrid(String term, int week) {
-        courseGridPanelAdapter.setSelectedWeek(week);
-        courseTodayListAdapter.notifyDataSetChanged();
-
         courseGridPanelAdapter.setSelectedTerm(term);
+        scrollablePanel.notifyDataSetChanged();
+        courseGridPanelAdapter.setSelectedWeek(week);
         scrollablePanel.notifyDataSetChanged();
     }
 
@@ -279,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
                     int currentWeek = CommonUtil.getCurrentWeek(startStr);
                     ContextHolder.currentWeek = currentWeek;
                     tabLayout.getTabAt(1).setText("第" + currentWeek + "周");
+                    // TODO bug 账户切换后数据视图没有更新
                     updateCourseGrid(currentTerm, currentWeek);
                     updateCourseList();
                 }

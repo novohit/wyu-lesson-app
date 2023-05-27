@@ -6,7 +6,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.wyu.R;
@@ -41,6 +43,15 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.custom_toolbar);
+        toolbar.setTitle("WYU GPT");
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         messageList = new ArrayList<>();
 
         recyclerView = findViewById(R.id.recycler_view);
@@ -96,7 +107,7 @@ public class ChatActivity extends AppCompatActivity {
         RequestBody body = RequestBody.create(JSON, jsonBody.toString());
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/completions")
-                .header("Authorization", "Bearer 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")
+                .header("Authorization", "Bearer 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")
                 .post(body)
                 .build();
 
@@ -119,8 +130,6 @@ public class ChatActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
                 } else {
                     addResponse("Failed to load response due to " + response.body().toString());
                 }

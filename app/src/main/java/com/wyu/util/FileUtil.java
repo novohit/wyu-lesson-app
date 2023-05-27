@@ -63,6 +63,14 @@ public class FileUtil {
         return true;
     }
 
+    public static boolean clearInfo() {
+        SharedPreferences sp = MyApplication.getContext().getSharedPreferences("data.conf", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
+        editor.commit();
+        return true;
+    }
+
     public static void getInfo() {
         SharedPreferences sharedPreferences = MyApplication.getContext().getSharedPreferences("data.conf", Context.MODE_PRIVATE);
 
@@ -71,10 +79,12 @@ public class FileUtil {
         String currentWeek = sharedPreferences.getString("currentWeek", "1");
 
         if (!"".equals(courseDataStr)) {
-            ContextHolder.courseData = gson.fromJson(courseDataStr, new TypeToken<Map<String, Map<Integer, CourseVO>>>(){}.getType());
+            ContextHolder.courseData = gson.fromJson(courseDataStr, new TypeToken<Map<String, Map<Integer, CourseVO>>>() {
+            }.getType());
         }
         if (!"".equals(scoreDataStr)) {
-            ContextHolder.scoreData = gson.fromJson(scoreDataStr, new TypeToken<Map<String, ScoreVO>>() {}.getType());
+            ContextHolder.scoreData = gson.fromJson(scoreDataStr, new TypeToken<Map<String, ScoreVO>>() {
+            }.getType());
         }
         ContextHolder.currentWeek = Integer.parseInt(currentWeek);
     }

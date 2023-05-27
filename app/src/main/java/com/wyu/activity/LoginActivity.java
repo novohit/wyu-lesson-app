@@ -26,6 +26,7 @@ import com.wyu.request.LoginModule;
 import com.wyu.request.ScoreModule;
 import com.wyu.util.CommonUtil;
 import com.wyu.constant.Constant;
+import com.wyu.util.FileUtil;
 import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;

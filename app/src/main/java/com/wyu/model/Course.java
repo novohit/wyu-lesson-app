@@ -33,6 +33,8 @@ public class Course {
 
     private Integer count;
 
+    public boolean conflict;
+
     public String getId() {
         return id;
     }

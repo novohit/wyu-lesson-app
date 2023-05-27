@@ -11,6 +11,7 @@ import com.wyu.constant.RequestInfo;
 import com.wyu.constant.BizCodeEnum;
 import com.wyu.util.CommonUtil;
 import com.wyu.util.CustomHttp;
+import com.wyu.util.FileUtil;
 import com.wyu.util.Resp;
 import okhttp3.Call;
 import okhttp3.Headers;
@@ -79,6 +80,7 @@ public class LoginModule extends RequestInfo {
     }
 
     public void studentSubmit(final String userNumber, final String password, final String verifyCode) {
+        FileUtil.clearInfo();
         Map<String, String> map = new HashMap<>();
 
         map.put("account", userNumber);
