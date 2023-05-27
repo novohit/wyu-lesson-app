@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name="com.wyu.activity.LoginActivity" />
-        <activity android:name="com.wyu.activity.ScoreListActivity"></activity>
+        <activity android:name="com.wyu.activity.ScoreListActivity"/>
+        <activity android:name="com.wyu.activity.ChatActivity"/>
     </application>
 
 </manifest>

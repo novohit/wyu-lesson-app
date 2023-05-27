@@ -112,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_scores:
                         startActivity(new Intent(MainActivity.this, ScoreListActivity.class));
                         break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(MainActivity.this, ChatActivity.class));
+                        break;
                     case R.id.nav_info:
                         new AlertDialog.Builder(MainActivity.this).setTitle("关于").setMessage("https://github.com/novohit").setPositiveButton("确定", null).show();
                         break;
