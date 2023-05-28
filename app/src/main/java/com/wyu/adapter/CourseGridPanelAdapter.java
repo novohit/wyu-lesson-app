@@ -45,10 +45,11 @@ public class CourseGridPanelAdapter extends PanelAdapter {
     public void setSelectedWeek(int selectedWeek) {
         selectedTermCourses = ContextHolder.courseData.get(selectedTerm);
         this.selectedWeek = selectedWeek;
-        if (selectedTermCourses != null) {
+        if (selectedTermCourses == null) {
+            selectedTermCourses = new HashMap<>();
             Log.i("week", "切换为第" + selectedWeek + "周");
-            updateGrid();
         }
+        updateGrid();
     }
 
     public int getSelectedWeek() {
@@ -58,10 +59,11 @@ public class CourseGridPanelAdapter extends PanelAdapter {
     public void setSelectedTerm(String selectedTerm) {
         selectedTermCourses = ContextHolder.courseData.get(selectedTerm);
         this.selectedTerm = selectedTerm;
-        if (selectedTermCourses != null) {
+        if (selectedTermCourses == null) {
+            selectedTermCourses = new HashMap<>();
             Log.i("week", "切换为第" + selectedTerm + "学期");
-            updateGrid();
         }
+        updateGrid();
     }
 
     public String getSelectedTerm() {
@@ -84,13 +86,13 @@ public class CourseGridPanelAdapter extends PanelAdapter {
                 List<Integer> rows = getRow(section);
                 for (Integer row : rows) {
                     // 有人的课程可能会有冲突
-                    Course last = grid[row][Integer.parseInt(course.getDayOfWeek())];
+                    Course last = grid[row][(Integer.parseInt(course.getDayOfWeek()) + 1) % 7];
                     if (last != null) {
                         last.setName(last.getName() + "\n" + course.getName());
                         //last.setLocation(last.getLocation() + "\n" + course.getLocation());
                         last.conflict = true;
                     } else {
-                        grid[row][Integer.parseInt(course.getDayOfWeek())] = course;
+                        grid[row][(Integer.parseInt(course.getDayOfWeek()) + 1) % 7] = course;
                     }
                 }
             }
@@ -149,7 +151,7 @@ public class CourseGridPanelAdapter extends PanelAdapter {
         //titleViewHolder.params.height;//设置当前控件布局的高度
         //titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);//将设置好的布局参数应用到控件中
         // 当天高亮
-        if (column == ContextHolder.dayOfWeek && selectedWeek == ContextHolder.currentWeek) {
+        if (column == (ContextHolder.dayOfWeek + 1) % 7 && selectedWeek == ContextHolder.currentWeek) {
             titleViewHolder.titleLinearlayout.setBackgroundColor(MyApplication.getContext().getResources().getColor(R.color.lightskyblue));
         } else {
             titleViewHolder.titleLinearlayout.setBackgroundColor(0x00000000);
@@ -169,7 +171,8 @@ public class CourseGridPanelAdapter extends PanelAdapter {
                 CourseVO courseVO = selectedTermCourses.get(selectedWeek);
                 if (courseVO != null) {
                     Map<String, String> dateMap = courseVO.getDate();
-                    date = dateMap.get(String.valueOf(column));
+                    // 日期左移一位
+                    date = dateMap.get(String.valueOf((column - 1) == 0 ? 7 : (column - 1)));
                     date = date.substring(5);
                 }
             }

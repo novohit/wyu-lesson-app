@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:hint="请输入学号"
-            android:text="3120003158"
+            android:text="xx"
             android:inputType="number"
             android:drawableLeft="@drawable/account"
             android:drawableStart="@drawable/account"/>
@@ -57,7 +57,7 @@
             android:drawableLeft="@drawable/password"
             android:drawableStart="@drawable/password"
             android:hint="请输入密码"
-            android:text="1"
+            android:text="zb001222!"
             android:inputType="textPassword"/>
 
     </com.google.android.material.textfield.TextInputLayout>

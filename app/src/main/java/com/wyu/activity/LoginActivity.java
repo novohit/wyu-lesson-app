@@ -1,10 +1,10 @@
 package com.wyu.activity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,16 +25,10 @@ import com.wyu.request.CourseModule;
 import com.wyu.request.LoginModule;
 import com.wyu.request.ScoreModule;
 import com.wyu.util.CommonUtil;
-import com.wyu.constant.Constant;
-import com.wyu.util.FileUtil;
 import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -51,21 +45,21 @@ public class LoginActivity extends AppCompatActivity {
     CourseModule courseModule;
     ScoreModule scoreModule;
 
-    @SuppressLint("HandlerLeak")
-    public Handler handler = new Handler() {
-        boolean beginCount = false;
-        int sum, cnt, suc;
+    public Handler handler = new Handler(Looper.myLooper()) {
+        boolean loginSuccess = false;
+        int cnt;
+        int suc;
 
         @Override
         public void handleMessage(Message msg) {
 
             switch (msg.what) {
-                case MyState.GET_VERIFYCODE_SUCCESSFUL:
+                case MyState.GET_CAPTCHA_SUCCESS:
                     Bitmap bitmap = (Bitmap) msg.obj;
                     captchaImg.setImageBitmap(bitmap);
                     break;
                 case MyState.LOGIN_FAILED:
-                    ToastUtil.show("登录失败,检查学号、密码、验证码是否正确");
+                    ToastUtil.show("学号、密码、验证码是否正确");
                     loginModule.getCaptcha();
                     break;
                 case MyState.CONNECTION_ERROR:
@@ -74,21 +68,8 @@ public class LoginActivity extends AppCompatActivity {
                 case MyState.FAILED:
                     ToastUtil.show((String) msg.obj);
                     break;
-                case MyState.STRING_ERROR:
-                    ToastUtil.show("字符串错误：" + (String) msg.obj);
-                    break;
-                case MyState.FILE_ERROR:
-                    ToastUtil.show("文件错误：" + (String) msg.obj);
-                    break;
-                case MyState.INCORRECT_HTML:
-                    ToastUtil.show("网页处理错误：" + (String) msg.obj);
-                    break;
-                case MyState.JSON_ERROR:
-                    ToastUtil.show("JSON处理错误：" + (String) msg.obj);
-                    Log.i(MyState.TAG, "获取失败！");
-                    break;
-                case MyState.LOGIN_SUCCESSFUL:
-                    beginCount = true;
+                case MyState.LOGIN_SUCCESS:
+                    loginSuccess = true;
                     cnt = suc = 0;
 
                     String currentTerm = CommonUtil.getCurrentTerm();
@@ -96,61 +77,26 @@ public class LoginActivity extends AppCompatActivity {
                     long start = System.currentTimeMillis();
                     courseModule.getCourseList(currentTerm);
                     scoreModule.getScoresList(currentTerm);
-                    getOtherTermCoursesAndScore(currentTerm);
                     while (ContextHolder.courseData.get(currentTerm) == null || ContextHolder.courseData.get(currentTerm).size() != 20) {
 
                     }
                     Log.i(MyState.TAG, "耗时：" + (System.currentTimeMillis() - start) + "ms");
                     Log.i(MyState.TAG, "正在获取学期：" + currentTerm);
                     break;
-                case MyState.SUCCESS:
-                    suc++;
-                    break;
                 default:
+                    break;
             }
-            if (beginCount) {
-                cnt++;
-                if (cnt >= sum + 1) {
-                    beginCount = false;
-                    sum = cnt = 0;
-                    ToastUtil.show("获取完成,共" + sum + "个,成功" + suc + "个");
-                    Log.i(MyState.TAG, "接收完成");
-                    //写入配置文件
-                    Intent intent = new Intent();
-                    intent.putExtra("state", suc);
-                    setResult(1, intent);
-                    finish();
-                }
+            if (loginSuccess) {
+                loginSuccess = false;
+                Log.i(MyState.TAG, "接收完成");
+                //写入配置文件
+                Intent intent = new Intent();
+                intent.putExtra("state", suc);
+                setResult(1, intent);
+                finish();
             }
-
         }
     };
-
-    private void getOtherTermCoursesAndScore(String defaultTerm) {
-        ExecutorService pool = Executors.newFixedThreadPool(4, new ThreadFactory() {
-            private final AtomicInteger threadNumber = new AtomicInteger(1);
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, "novo-pool-" + threadNumber.getAndIncrement());
-                if (t.isDaemon())
-                    t.setDaemon(false);
-                if (t.getPriority() != Thread.NORM_PRIORITY)
-                    t.setPriority(Thread.NORM_PRIORITY);
-                return t;
-            }
-        });
-        for (int i = 0; i < Constant.SELECTED_TERM_LIST.length; i++) {
-            String term = Constant.SELECTED_TERM_LIST[i];
-            if (!term.equals(defaultTerm)) {
-                pool.execute(() -> {
-                    Log.i(MyState.TAG, "正在查询" + term + "的课表");
-                    courseModule.getCourseList(term);
-                    scoreModule.getScoresList(term);
-                });
-            }
-        }
-    }
 
     public LoginActivity() {
     }

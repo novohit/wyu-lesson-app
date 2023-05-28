@@ -60,7 +60,6 @@ public class CourseModule extends RequestInfo {
 
     public void getCourseList(String term, int week, String account) {
         String url = URL_COURSE + String.format("?term=%s&week=%d", term, week);
-        Log.i(MyState.TAG, url);
         new CustomHttp(handler) {
             @Override
             protected void success(Call call, Response response) throws IOException {
@@ -76,7 +75,7 @@ public class CourseModule extends RequestInfo {
                         ContextHolder.courseData.put(term, map);
                     }
                     map.put(week, courseVO);
-                    Log.i("coursevo ", String.valueOf(courseVO.getCourseCount()));
+                    Log.i(MyState.TAG, url + " complete");
                 }
             }
         }.get(url, RequestInfo.cookies);

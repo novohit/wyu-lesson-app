@@ -67,7 +67,7 @@ public class LoginModule extends RequestInfo {
                             }
                             Log.i(MyState.TAG, cookies.toString());
                             Message msg = new Message();
-                            msg.what = MyState.GET_VERIFYCODE_SUCCESSFUL;
+                            msg.what = MyState.GET_CAPTCHA_SUCCESS;
                             msg.obj = bitmap;
                             handler.sendMessage(msg);
                         }
@@ -105,7 +105,7 @@ public class LoginModule extends RequestInfo {
                         RequestInfo.password = password;
                         Log.i(MyState.TAG, "登陆成功");
                         Message msg = new Message();
-                        msg.what = MyState.LOGIN_SUCCESSFUL;
+                        msg.what = MyState.LOGIN_SUCCESS;
                         handler.sendMessage(msg);
                     } else {
                         Message msg = new Message();

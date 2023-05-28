@@ -3,16 +3,22 @@ package com.wyu.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.*;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
@@ -30,14 +36,22 @@ import com.wyu.adapter.CustomPagerAdapter;
 import com.wyu.config.ContextHolder;
 import com.wyu.constant.MyState;
 import com.wyu.model.CourseVO;
+import com.wyu.request.CourseModule;
+import com.wyu.request.LoginModule;
+import com.wyu.request.ScoreModule;
 import com.wyu.util.CommonUtil;
 import com.wyu.constant.Constant;
 import com.wyu.util.FileUtil;
+import com.wyu.util.MyApplication;
 import com.wyu.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,6 +70,25 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private CourseTodayListAdapter courseTodayListAdapter;
 
+    CourseModule courseModule;
+    ScoreModule scoreModule;
+
+    public Handler handler = new Handler(Looper.myLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MyState.OTHER_TERM:
+                    String currentTerm = CommonUtil.getCurrentTerm();
+                    getOtherTermCoursesAndScore(currentTerm);
+                    Toast.makeText(MyApplication.getContext(), "其他学期数据加载完成", Toast.LENGTH_LONG).show();
+                    ActionMenuItemView item = findViewById(R.id.ic_mark);
+                    item.setClickable(true);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +107,12 @@ public class MainActivity extends AppCompatActivity {
         initView();
         relateTabAndViewPager();
         initViewPager();
-//        if (ContextHolder.myCourseTableList != null) {
-////            updateCourseGrid(EnvironmentPool.currentWeek, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
-////            updateCourseList(EnvironmentPool.currentWeek, EnvironmentPool.myCourseTableList.get(EnvironmentPool.curSemPos));
-//        }
+        initGetInfoModule();
+    }
 
+    private void initGetInfoModule() {
+        courseModule = new CourseModule(null);
+        scoreModule = new ScoreModule(null);
     }
 
     private void initView() {
@@ -162,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
                         lastIndex = i;
                     }
                 }
-
                 new AlertDialog.Builder(MainActivity.this).setTitle("选择要查看的学期").setSingleChoiceItems(Constant.SELECTED_TERM_LIST, lastIndex, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         updateCourseGrid(Constant.SELECTED_TERM_LIST[which], courseGridPanelAdapter.getSelectedWeek());
@@ -267,6 +300,13 @@ public class MainActivity extends AppCompatActivity {
                 int state = data.getIntExtra("state", -1);
                 // 登录成功
                 if (state >= 0) {
+                    Message msg = new Message();
+                    msg.what = MyState.OTHER_TERM;
+                    handler.sendMessage(msg);
+
+                    ActionMenuItemView item = findViewById(R.id.ic_mark);
+                    item.setClickable(false);
+
                     Log.i(MyState.TAG, "onActivityResult");
                     String currentTerm = CommonUtil.getCurrentTerm();
                     Map<Integer, CourseVO> currentTermData = ContextHolder.courseData.get(currentTerm);
@@ -282,6 +322,34 @@ public class MainActivity extends AppCompatActivity {
                     updateCourseGrid(currentTerm, currentWeek);
                     updateCourseList();
                 }
+            }
+        }
+    }
+
+    private void getOtherTermCoursesAndScore(String defaultTerm) {
+        ExecutorService pool = Executors.newFixedThreadPool(4, new ThreadFactory() {
+            private final AtomicInteger threadNumber = new AtomicInteger(1);
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, "pool-" + threadNumber.getAndIncrement());
+                if (t.isDaemon())
+                    t.setDaemon(false);
+                if (t.getPriority() != Thread.NORM_PRIORITY)
+                    t.setPriority(Thread.NORM_PRIORITY);
+                return t;
+            }
+        });
+        for (int i = 0; i < Constant.SELECTED_TERM_LIST.length; i++) {
+            String term = Constant.SELECTED_TERM_LIST[i];
+            if (!term.equals(defaultTerm)) {
+                pool.execute(() -> {
+                    courseModule.getCourseList(term);
+                    Log.i(MyState.TAG, "course " + term + " complete");
+                });
+                pool.execute(() -> {
+                    scoreModule.getScoresList(term);
+                    Log.i(MyState.TAG, "score " + term + " complete");
+                });
             }
         }
     }
