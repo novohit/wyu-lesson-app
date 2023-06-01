@@ -1,19 +1,24 @@
 package com.wyu.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.wyu.R;
 import com.wyu.adapter.MessageAdapter;
+import com.wyu.constant.Constant;
 import com.wyu.model.Message;
+import com.wyu.util.ToastUtil;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,6 +80,18 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
     void addToChat(String message, String sentBy) {
         runOnUiThread(new Runnable() {
             @Override
@@ -107,7 +124,7 @@ public class ChatActivity extends AppCompatActivity {
         RequestBody body = RequestBody.create(JSON, jsonBody.toString());
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/completions")
-                .header("Authorization", "Bearer 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")
+                .header("Authorization", "Bearer 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")
                 .post(body)
                 .build();
 
