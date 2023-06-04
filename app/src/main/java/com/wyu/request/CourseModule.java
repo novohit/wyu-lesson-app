@@ -52,9 +52,14 @@ public class CourseModule extends RequestInfo {
         });
         for (int i = 1; i <= 20; i++) {
             int j = i;
-            pool.execute(() -> {
-                getCourseList(term, j, account);
-            });
+            //pool.execute(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            getCourseList(term, j, account);
+            //});
         }
     }
 

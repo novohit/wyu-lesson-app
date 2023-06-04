@@ -151,7 +151,7 @@ public class CourseGridPanelAdapter extends PanelAdapter {
         //titleViewHolder.params.height;//设置当前控件布局的高度
         //titleViewHolder.titleLinearlayout.setLayoutParams(titleViewHolder.params);//将设置好的布局参数应用到控件中
         // 当天高亮
-        if (column == (ContextHolder.dayOfWeek + 1) % 7 && selectedWeek == ContextHolder.currentWeek) {
+        if (((column - 1) == 0 ? 7 : (column - 1)) == ContextHolder.dayOfWeek && selectedWeek == ContextHolder.currentWeek) {
             titleViewHolder.titleLinearlayout.setBackgroundColor(MyApplication.getContext().getResources().getColor(R.color.lightskyblue));
         } else {
             titleViewHolder.titleLinearlayout.setBackgroundColor(0x00000000);

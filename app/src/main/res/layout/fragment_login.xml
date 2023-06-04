@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:hint="请输入学号"
-            android:text="xx"
+            android:text="3120003158"
             android:inputType="number"
             android:drawableLeft="@drawable/account"
             android:drawableStart="@drawable/account"/>

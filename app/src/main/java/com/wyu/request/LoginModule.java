@@ -76,7 +76,7 @@ public class LoginModule extends RequestInfo {
                     }
                 }
             }
-        }.get("http://116.62.108.144:8081/user/captcha");
+        }.get(URL_CAPTCHA);
     }
 
     public void studentSubmit(final String userNumber, final String password, final String verifyCode) {
