@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/welcome_text"
             android:layout_centerInParent="true"
-            android:text="Welcome to WYUGPT\nTry it out now"
+            android:text="欢迎来到邑起聊天小程序\n你有什么想和我说的吗"
             android:gravity="center"
             android:textSize="28dp"/>
 

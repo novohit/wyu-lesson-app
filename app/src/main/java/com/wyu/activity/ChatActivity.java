@@ -50,7 +50,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.custom_toolbar);
-        toolbar.setTitle("WYU GPT");
+        toolbar.setTitle("邑起聊天");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
