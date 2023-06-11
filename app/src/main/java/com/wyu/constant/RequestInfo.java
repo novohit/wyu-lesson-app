@@ -5,7 +5,7 @@ public class RequestInfo {
     protected static String password;
     protected static String captcha;
     //protected final static String DOMAIN = "http://116.62.108.144:8081";
-    protected final static String DOMAIN = "http://10.10.26.111:8082";
+    protected final static String DOMAIN = "http://10.10.26.147:8082";
     protected final static String URL_LOGIN = DOMAIN + "/user/login";
     protected final static String URL_CAPTCHA = DOMAIN + "/user/captcha";
     protected final static String URL_COURSE = DOMAIN + "/user/courses";

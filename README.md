@@ -1,15 +1,34 @@
 ## 五邑大学课程表app
 
-## 初版
+原生Android实现
 
-- 登录界面
+## 功能
 
-![image-20230524220929807](https://zwx-images-1305338888.cos.ap-guangzhou.myqcloud.com/typora/image-20230524220929807.png)
+- 数据爬取服务端在 https://github.com/novohit/wyu-lesson (SpringBoot)
 
+- 启动页
+
+- 登录
+
+- 每周课表（高亮显示当天）
 - 今日课表
 
-![image-20230524221030939](https://zwx-images-1305338888.cos.ap-guangzhou.myqcloud.com/typora/image-20230524221030939.png)
+- 成绩查询
+- 考试安排
+- ChatGPT聊天
 
-- 每周课表
+
+
+## 截图
+
+![pictures](https://zwx-images-1305338888.cos.ap-guangzhou.myqcloud.com/typora/pictures.jpg)
+
+![pictures (1)](https://zwx-images-1305338888.cos.ap-guangzhou.myqcloud.com/typora/pictures%20(1).jpg)
+
+![pictures (2)](https://zwx-images-1305338888.cos.ap-guangzhou.myqcloud.com/typora/pictures%20(2).jpg)
+
+
+
+![image-20230524221030939](https://zwx-images-1305338888.cos.ap-guangzhou.myqcloud.com/typora/image-20230524221030939.png)
 
 ![image-20230524221047022](https://zwx-images-1305338888.cos.ap-guangzhou.myqcloud.com/typora/image-20230524221047022.png)

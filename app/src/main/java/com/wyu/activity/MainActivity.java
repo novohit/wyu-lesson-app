@@ -343,19 +343,19 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < Constant.SELECTED_TERM_LIST.length; i++) {
             String term = Constant.SELECTED_TERM_LIST[i];
             if (!term.equals(defaultTerm)) {
-                //pool.execute(() -> {
+                pool.execute(() -> {
                     courseModule.getCourseList(term);
                     Log.i(MyState.TAG, "course " + term + " complete");
-                //});
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                //pool.execute(() -> {
+                });
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+                pool.execute(() -> {
                     scoreModule.getScoresList(term);
                     Log.i(MyState.TAG, "score " + term + " complete");
-                //});
+                });
             }
         }
     }
